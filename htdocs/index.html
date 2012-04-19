@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset=utf-8 />
+    <title>Node beat</title>
+
+    <script src="require.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <a id="play">play</a>
+    <script>
+
+      var socket = io.connect('http://localhost');
+      socket.on('/connection/initialised', function (data) {
+        console.log(data);
+      });
+
+      document.getElementById('play').addEventListener('click', function(e) {
+        socket.emit("/sequencer/play", {
+          position: 0
+        });
+      })
+
+      </script>
+  </body>
+</html>
