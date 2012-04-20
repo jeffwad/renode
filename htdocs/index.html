@@ -8,7 +8,11 @@
     <script src="/socket.io/socket.io.js"></script>
   </head>
   <body>
-    <a id="play">play</a>
+    <p><a href="#" id="play">play</a> | <a href="#" id="stop">stop</a></p>
+    <p><a href="#" id="one">one</a> | <a href="#" id="two">two</a></p>
+
+
+
     <script>
 
       var socket = io.connect('http://localhost');
@@ -17,10 +21,25 @@
       });
 
       document.getElementById('play').addEventListener('click', function(e) {
-        socket.emit("/sequencer/play", {
-          position: 0
+        socket.emit("play");
+        e.preventDefault();
+      }, false);
+      document.getElementById('stop').addEventListener('click', function(e) {
+        socket.emit("stop");
+        e.preventDefault();
+      }, false);
+      document.getElementById('one').addEventListener('click', function(e) {
+        socket.emit("pattern", {
+          index: 0
         });
-      })
+        e.preventDefault();
+      }, false);
+      document.getElementById('two').addEventListener('click', function(e) {
+        socket.emit("pattern", {
+          index: 1
+        });
+        e.preventDefault();
+      }, false);
 
       </script>
   </body>
