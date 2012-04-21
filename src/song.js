@@ -63,9 +63,12 @@ module.exports = {
               {"key": 36, "velocity": 127, "duration": 40},
               {"key": 46, "velocity": 80, "duration": 40}
             ],
+            56:[
+              {"key": 46, "velocity": 20, "duration": 40}
+            ],
             64: [
               {"key": 36, "velocity": 127, "duration": 40},
-              {"key": 46, "velocity": 30, "duration": 40}
+              {"key": 46, "velocity": 80, "duration": 40}
             ],
             72:[
               {"key": 36, "velocity": 127, "duration": 40}
