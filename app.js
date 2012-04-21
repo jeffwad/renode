@@ -6,6 +6,7 @@
 
 */
 require('lib/Object');
+require('lib/String');
 
 //  start our server
 var SequencerModel = require('app/models/SequencerModel'),
@@ -36,7 +37,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on("pattern", function(data) {
-    sequencer.tracks.getByIndex(0).activatePattern(data.index);
+    sequencer.tracks.getByIndex(0).activateNextPattern(data.index);
   });
 
 });
