@@ -16,11 +16,12 @@ module.exports = {
 
   "tracks": [
     {
-      "title"   : "Drum machine",
-      "midiOn"  : 144,
-      "midiOff" : 128,
-
-      "patterns": [
+      "title"     : "Drum machine",
+      "midiOn"    : 144,
+      "midiOff"   : 128,
+      "program"   : 192,
+      "instrument": 14,
+      "patterns"  : [
         {
           "stepCount": 128, // ((1-16) * 8) - 1
           "steps": {
@@ -95,16 +96,16 @@ module.exports = {
     //         0:[
     //           {"key": 36, "velocity": 127, "duration": 100}
     //         ],
-    //         15:[
+    //         16:[
     //           {"key": 56, "velocity": 127, "duration": 100}
     //         ],
-    //         31:[
+    //         32:[
     //           {"key": 56, "velocity": 127, "duration": 100}
     //         ],
-    //         63: [
+    //         64: [
     //           {"key": 36, "velocity": 127, "duration": 100}
     //         ],
-    //         95: [
+    //         96: [
     //           {"key": 66, "velocity": 127, "duration": 100}
     //         ]
     //       }

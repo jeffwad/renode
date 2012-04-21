@@ -2,7 +2,10 @@
 
   @module       app/models/BaseModel
   @description  base model object
-  @todo         accessors
+  @todo         1) hasMany is the only relation so far. Implement hasOne, embeds, belongsTo, hasAndBelongsToMany?
+                2) there is some code duplication to do with recursing back up the prototype
+                chain in two methods. sort this out - but have a think about how first.
+                3) add some readonly capacity to the accessors
 
 */
 var utils       = require('lib/utils'),
@@ -42,7 +45,7 @@ module.exports = Base.create({
     });
 
     this._initAccessors();
-    this._initHasMany(); // change to _initRelationships
+    this._initRelationships();
 
     this._updateAccessors(data);
 
@@ -91,7 +94,7 @@ module.exports = Base.create({
   /**
     @description  sets up the accessors on the model
                   recursing through all the inherited models
-    @param        {object} object
+    @param        {object || undefined} object
   */
   _initAccessors: function(object) {
 
@@ -134,9 +137,9 @@ module.exports = Base.create({
   /**
     @description  sets up the accessor hasMany relationships on the model,
                   recursing through all the inherited models
-    @param        {object} object
+    @param        {object || undefined} object
   */
-  _initHasMany: function(object) {
+  _initRelationships: function(object) {
 
     var proto;
 
@@ -225,7 +228,7 @@ module.exports = Base.create({
 
     proto = Object.getPrototypeOf(object);
     if(proto && proto.hasOwnProperty('hasMany')) {
-      this._initHasMany(proto);
+      this._initRelationships(proto);
     }
 
 
@@ -233,6 +236,11 @@ module.exports = Base.create({
 
 
 
+  /**
+    @description  loops over all the accessors values
+                  and updates their values from data
+    @param        {object} data
+  */
   _updateAccessors: function(data) {
 
     forEach(this, function(accessor, name){
