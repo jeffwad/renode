@@ -1,16 +1,15 @@
 /**
 
-  @module       app/models/TrackModelCollection
-  @description  A collection of models
+  @module       lib/Collection
+  @description  A collection of objects
 
 */
-var Base      = require('lib/Base'),
-    iter      = require('lib/iter'),
-    BaseModel = require('app/models/BaseModel'),
-    indexOf   = iter.indexOf,
-    some      = iter.some;
+var EventMachine = require("lib/EventMachine"),
+    iter         = require("lib/iter"),
+    indexOf      = iter.indexOf,
+    some         = iter.some;
 
-module.exports = Base.create({
+module.exports = {}.create({
 
 
   /**
@@ -18,7 +17,7 @@ module.exports = Base.create({
   */
   __init__: function(type) {
 
-    Base.__init__.apply(this);
+    EventMachine.__init__.apply(this);
     Object.defineProperties(this, {
       '_type': {
         value: type
@@ -35,14 +34,14 @@ module.exports = Base.create({
 
   /**
     @description  adds a model to the collection
-    @param        {app/models/BaseModel} model
+    @param        {lib/Base} object
   */
-  add: function(model) {
+  add: function(object) {
 
-    if(!this._type.isPrototypeOf(model)) {
+    if(!this._type.isPrototypeOf(object)) {
       throw Error.spawn(module.id + "#add: model does not implement " + this._type + " on it's prototype");
     }
-    this._items.push(model);
+    this._items.push(object);
 
   },
 
@@ -50,15 +49,15 @@ module.exports = Base.create({
   /**
     @description  retrieves a model by id
     @param        {String} id
-    @return       {app/models/BaseModel}
+    @param        {lib/Base} object
   */
   getById: function(id) {
 
     var ret = false;
 
-    some(this._items, function(model){
-      if (model.id === id) {
-        ret = model;
+    some(this._items, function(object){
+      if (object.id === id) {
+        ret = object;
         return true;
       }
       return false;
@@ -71,7 +70,7 @@ module.exports = Base.create({
   /**
     @description  retrieves a model by index
     @param        {String} index
-    @return       {app/models/BaseModel}
+    @param        {lib/Base} object
   */
   getByIndex: function(index) {
 
@@ -93,12 +92,12 @@ module.exports = Base.create({
 
   /**
     @description  removes a model from the collection
-    @param        {app/models/BaseModel} model
+    @param        {lib/Base} object
     @return       {Boolean}
   */
-  remove: function(model) {
+  remove: function(object) {
 
-    var index = indexOf(this._items, model);
+    var index = indexOf(this._items, object);
     if(index !== -1) {
       this._items.splice(index, 1);
       return true;

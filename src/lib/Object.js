@@ -3,7 +3,7 @@
   @module   adds some usefull inheritance methods to Object.prototype
 
 */
-var iter    = require('lib/iter'),
+var iter    = require("lib/iter"),
     forEach = iter.forEach;
 
 Object.defineProperties(Object.prototype, {

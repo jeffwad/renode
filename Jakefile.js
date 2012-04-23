@@ -19,8 +19,7 @@ namespace("build", function() {
 
     var cmds = [
       "rm -r " + __dirname + "/htdocs",
-      "mkdir -p " + __dirname + "/htdocs",
-      "cp -r " + __dirname + "/src/api/ "  + __dirname + "/htdocs/api/"
+      "mkdir -p " + __dirname + "/htdocs"
     ];
 
     runCmds(cmds, function() {
@@ -29,7 +28,7 @@ namespace("build", function() {
       //copyAndMinifyFile(__dirname + "/src/worker.js");
       copyFile(__dirname + "/src/index.html");
       //copyFile(__dirname + "/src/index.debug.html");
-      buildFiles(__dirname + "/client.js");
+      buildFiles(__dirname + "/src/client.js");
       //buildFiles(__dirname + "/src/tests/modules.js");
       //copyFile(__dirname + "/src/tests/runner.html");
 
@@ -128,7 +127,13 @@ function createTransportFile(filename, callback) {
     //  does the module have any dependencies
     requires = data.match(/require\(["'](\w*|\/*|:*|-*|\.\w{2,3})+["']\)/g);
     requires = requires ? requires.map(function(dependency) {
-      return "\"" + dependency.replace(/require\("/, "").replace(/"\)/, "") + "\"";
+
+      if(dependency === "require(\"events\")") {
+        return "\"" + dependency.replace(/require\("/, "").replace(/"\)/, "") + "\"";
+      }
+
+      return "\"/" + dependency.replace(/require\("/, "").replace(/"\)/, "") + "\"";
+
     }) : false;
 
     //  split at the first end comment block
@@ -140,6 +145,10 @@ function createTransportFile(filename, callback) {
     //  stich the module back together
     raw.shift();
     data = raw.join("*/\n").replace(/\n/g, "\n\t\t");
+
+    //  ensure we have leading /'s on our require statements'
+    data = data.replace(/require\("/g, "require(\"/");
+    data = data.replace(/require\("\/events/g, "require(\"events");
 
     //  insert raw module into transport
     transport.splice(2, 0, "\t\t" + data + "\n");

@@ -6,7 +6,9 @@
   @todo         add EventObject usage
 
 */
-var EventEmitter = require('events').EventEmitter;
+require("lib/Object");
+
+var EventEmitter = require("events").EventEmitter;
 
 
 /**

@@ -1,23 +1,20 @@
 /**
 
-  @module       lib/Base
-  @description  object that all other objects in our system will inherit from
-                all objects support accessors and relationships
-  @todo         1) hasMany is the only relation so far. Implement hasOne, embeds, belongsTo, hasAndBelongsToMany?
-                2) there is some code duplication to do with recursing back up the prototype
-                chain in two methods. sort this out - but have a think about how first.
-                3) add some readonly capacity to the accessors
+  @module       app/ui/BaseComponent
+  @description  base ui component
 
 */
-var EventMachine = require("lib/EventMachine"),
-    utils        = require("lib/utils"),
-    iter         = require("lib/iter"),
-    Collection   = require("lib/Collection"),
-    forEach      = iter.forEach,
-    services = {};
+var utils       = require("lib/utils"),
+    Base        = require("lib/Base"),
+    iter        = require("lib/iter"),
+    Collection  = require("app/models/Collection"),
+    forEach     = iter.forEach;
 
-module.exports = EventMachine.create({
 
+
+module.exports = Base.create({
+
+  //  properties
 
   /**
     @description  accessors
@@ -37,31 +34,24 @@ module.exports = EventMachine.create({
   */
   __init__: function(data) {
 
-      EventMachine.__init__.call(this);
+    Base.__init__.apply(this);
 
-      Object.defineProperty(this, "_data", {
-        value: {}
-      });
+    Object.defineProperty(this, "_data", {
+      value: {}
+    });
 
-      this._initAccessors();
-      this._initRelationships();
-      this._initServices();
-      this._updateAccessors(data);
+    this._initAccessors();
+    this._initRelationships();
 
-      this.id = utils.generateId();
+    this._updateAccessors(data);
 
-  },
-
-
-  //  public
-  registerService: function(key, service) {
-
-    services[key] = service;
+    this.id = utils.generateId();
 
   },
 
 
   //  private
+
 
   _createAccessor: function(name, definition, enumerable) {
 
@@ -241,27 +231,6 @@ module.exports = EventMachine.create({
   },
 
 
-  //  sets up the services
-  _initServices: function() {
-
-    if(this.services) {
-
-      forEach(this.services, function(service) {
-
-        Object.defineProperty(this, service, {
-
-          get: function() {
-            return services[service];
-          }
-
-        });
-
-      }, this);
-
-    }
-
-  },
-
 
   /**
     @description  loops over all the accessors values
@@ -282,4 +251,3 @@ module.exports = EventMachine.create({
 
 
 });
-

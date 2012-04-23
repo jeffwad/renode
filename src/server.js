@@ -5,16 +5,17 @@
   @module   bootstrap the app
 
 */
-require('lib/Object');
-require('lib/String');
+require("lib/Object");
+require("lib/String");
 
 //  start our server
 var http           = require("http"),
     nodeStatic     = require("node-static"),
-    socket             = require("socket.io"),
-    midi           = require('midi'),
-    SequencerModel = require('app/models/SequencerModel'),
-    song           = require('song'),
+    socket         = require("socket.io"),
+    midi           = require("midi"),
+    Base           = require("lib/Base"),
+    SequencerModel = require("app/models/SequencerModel"),
+    song           = require("song"),
     io, sequencer, output, server, file;
 
 
@@ -26,16 +27,11 @@ output = new midi.output();
 output.openVirtualPort("Renode");
 
 
-sequencer = SequencerModel.spawn(song, output);
-
-
-
-
-file = new(nodeStatic.Server)('htdocs', { cache: 0, headers: {'X-App':'Nodebeat!'} });
+file = new(nodeStatic.Server)("htdocs", { cache: 0, headers: {"X-App":"Nodebeat!"} });
 
 server = http.createServer(function (request, response) {
 
-  request.on('end', function () {
+  request.on("end", function () {
     //
     // Serve files!
     //
@@ -58,7 +54,7 @@ console.log("> node-static is listening on http://127.0.0.1:8080");
 
 io = socket.listen(server);
 
-io.sockets.on('connection', function (socket) {
+io.sockets.on("connection", function (socket) {
   socket.on("play", function() {
     sequencer.play();
   });
@@ -71,5 +67,10 @@ io.sockets.on('connection', function (socket) {
     sequencer.tracks.getByIndex(0).activateNextPattern(data.index);
   });
 
+  Base.registerService("socket", socket);
+  sequencer = SequencerModel.spawn(song, output);
+
+
 });
+
 

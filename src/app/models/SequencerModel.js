@@ -62,6 +62,11 @@ module.exports = BaseModel.create({
   },
 
 
+  syncApi: [
+    "play", "stop"
+  ],
+
+
   /**
     @description  constructor
   */
@@ -90,6 +95,7 @@ module.exports = BaseModel.create({
   pause: function() {
 
     clearTimeout(this._timer);
+    this.playing = false;
 
   },
 
@@ -100,6 +106,10 @@ module.exports = BaseModel.create({
   */
   play: function() {
 
+    if(this.playing) {
+      return;
+    }
+    this.playing = true;
     this._timer = setInterval(this._playStep.bind(this), this._barDuration() / this.steps);
 
   },
@@ -115,6 +125,7 @@ module.exports = BaseModel.create({
     forEach(this.tracks.items(), function(track) {
       track.reset();
     });
+    this.playing = false;
 
   },
 

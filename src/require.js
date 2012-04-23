@@ -366,7 +366,7 @@
         // if(!self.debug) {
         //   moduleName += ".min";
         // }
-        importScripts("/" + moduleName + ".js");
+        importScripts(moduleName + ".js");
       };
     }
     else {
@@ -382,7 +382,7 @@
         // if(!self.debug) {
         //  moduleName += ".min";
         // }
-        script.src = "/" + moduleName + ".js";
+        script.src = moduleName + ".js";
         head.appendChild(script);
 
       };
@@ -417,7 +417,7 @@
 
       var exports, module;
 
-      try {
+      // try {
 
         delete loading[moduleName];
         uninitialised[moduleName] = true;
@@ -468,10 +468,10 @@
 
         }
 
-      }
-      catch(e) {
-        console.error(moduleName, e);
-      }
+      // }
+      // catch(e) {
+      //   console.error(moduleName, e);
+      // }
     }
 
     // attach api

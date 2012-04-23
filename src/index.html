@@ -15,31 +15,7 @@
 
     <script>
 
-      var socket = io.connect('http://localhost');
-      socket.on('/connection/initialised', function (data) {
-        console.log(data);
-      });
-
-      document.getElementById('play').addEventListener('click', function(e) {
-        socket.emit("play");
-        e.preventDefault();
-      }, false);
-      document.getElementById('stop').addEventListener('click', function(e) {
-        socket.emit("stop");
-        e.preventDefault();
-      }, false);
-      document.getElementById('one').addEventListener('click', function(e) {
-        socket.emit("pattern", {
-          index: 0
-        });
-        e.preventDefault();
-      }, false);
-      document.getElementById('two').addEventListener('click', function(e) {
-        socket.emit("pattern", {
-          index: 1
-        });
-        e.preventDefault();
-      }, false);
+      require("client");
 
       </script>
   </body>
