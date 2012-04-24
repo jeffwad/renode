@@ -28,6 +28,8 @@ module.exports = BaseModel.create({
   },
 
 
+  VELOCITY_OFF: 0,
+
   /**
     @description  constructor
   */

@@ -9,23 +9,51 @@ require("lib/Object");
 require("lib/String");
 
 //  start our server
-var Base           = require("lib/Base"),
+var service        = require("lib/service"),
     SequencerModel = require("app/models/SequencerModel"),
     song           = require("song"),
+    EventMachine   = require("lib/EventMachine"),
     sequencer;
 
 
 
-var socket = io.connect('http://localhost');
+var socket = io.connect("http://localhost");
+    //  set up the socket
+
+    var sync = EventMachine.spawn();
+
 //var socket = io.connect('http://192.168.1.82');
 
-Base.registerService("socket", socket);
-sequencer = SequencerModel.spawn(song, null);
+socket.on("/connection/initialised", function (data) {
 
+  console.log("/connection/initialised");
 
-socket.on('/connection/initialised', function (data) {
-  console.log(data);
 });
+
+socket.on("/sync", function(data) {
+
+  console.log('wtf: ', data);
+
+  sync.emit("/sync/" + data.methodName, data);
+  //socket.emit("/sync", data);
+
+});
+
+sync.on("/sync", function(data) {
+
+  socket.emit("/sync", data);
+
+});
+
+
+service.register("sync", sync);
+service.register("midi", {
+  input: {recieveMessage: function() {}},
+  output: {sendMessage: function() {console.log(arguments);}}
+});
+sequencer = SequencerModel.spawn(song);
+
+
 
 document.getElementById('play').addEventListener('click', function(e) {
   sequencer.play();
@@ -36,15 +64,11 @@ document.getElementById('stop').addEventListener('click', function(e) {
   e.preventDefault();
 }, false);
 document.getElementById('one').addEventListener('click', function(e) {
-  socket.emit("pattern", {
-    index: 0
-  });
+  sequencer.tracks.getByIndex(0).activateNextPattern(0);
   e.preventDefault();
 }, false);
 document.getElementById('two').addEventListener('click', function(e) {
-  socket.emit("pattern", {
-    index: 1
-  });
+  sequencer.tracks.getByIndex(0).activateNextPattern(1);
   e.preventDefault();
 }, false);
 

@@ -1,3 +1,9 @@
+/**
+
+  @module       song
+  @description  test beats
+
+*/
 
 // 0
 // 15
@@ -26,22 +32,22 @@ module.exports = {
           "stepCount": 128, // ((1-16) * 8) - 1
           "steps": {
             0:[
-              {"key": 36, "velocity": 127, "duration": 40}
+              {"key": 36, "velocity": 127, "duration": 120}
             ],
             32:[
-              {"key": 40, "velocity": 127, "duration": 40}
+              {"key": 40, "velocity": 127, "duration": 120}
             ],
             48:[
-              {"key": 36, "velocity": 127, "duration": 40}
+              {"key": 36, "velocity": 127, "duration": 120}
             ],
             64: [
-              {"key": 36, "velocity": 127, "duration": 40}
+              {"key": 36, "velocity": 127, "duration": 120}
             ],
             72:[
-              {"key": 36, "velocity": 127, "duration": 40}
+              {"key": 36, "velocity": 127, "duration": 120}
             ],
             96: [
-              {"key": 40, "velocity": 127, "duration": 40}
+              {"key": 40, "velocity": 127, "duration": 120}
             ]
           }
         },
@@ -49,36 +55,36 @@ module.exports = {
           "stepCount": 128,
           "steps": {
             0:[
-              {"key": 36, "velocity": 127, "duration": 40},
-              {"key": 46, "velocity": 30, "duration": 40}
+              {"key": 36, "velocity": 127, "duration": 120},
+              {"key": 46, "velocity": 30, "duration": 120}
             ],
             16:[
-              {"key": 46, "velocity": 80, "duration": 40}
+              {"key": 46, "velocity": 80, "duration": 120}
             ],
             32:[
-              {"key": 40, "velocity": 127, "duration": 40},
-              {"key": 46, "velocity": 30, "duration": 40}
+              {"key": 40, "velocity": 127, "duration": 120},
+              {"key": 46, "velocity": 30, "duration": 120}
             ],
             48:[
-              {"key": 36, "velocity": 127, "duration": 40},
-              {"key": 46, "velocity": 80, "duration": 40}
+              {"key": 36, "velocity": 127, "duration": 120},
+              {"key": 46, "velocity": 80, "duration": 120}
             ],
             64: [
-              {"key": 36, "velocity": 127, "duration": 40},
-              {"key": 46, "velocity": 80, "duration": 40}
+              {"key": 36, "velocity": 127, "duration": 120},
+              {"key": 46, "velocity": 80, "duration": 120}
             ],
             72:[
-              {"key": 36, "velocity": 127, "duration": 40}
+              {"key": 36, "velocity": 127, "duration": 120}
             ],
             80: [
-              {"key": 46, "velocity": 80, "duration": 40}
+              {"key": 46, "velocity": 80, "duration": 120}
             ],
             96: [
-              {"key": 40, "velocity": 127, "duration": 40},
-              {"key": 46, "velocity": 30, "duration": 40}
+              {"key": 40, "velocity": 127, "duration": 120},
+              {"key": 46, "velocity": 30, "duration": 120}
             ],
             112:[
-              {"key": 46, "velocity": 80, "duration": 40}
+              {"key": 46, "velocity": 80, "duration": 120}
             ]
           }
         }

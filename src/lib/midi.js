@@ -1,0 +1,18 @@
+/**
+
+  @module       lib/midi
+  @description  midi port
+
+*/
+var midi = require("midi"),
+    output, input;
+
+// Set up a new output.
+output = new midi.output();
+output.openVirtualPort("renode:out");
+
+input = new midi.input();
+input.openVirtualPort("renode:in");
+
+exports.output = output;
+exports.input = input;

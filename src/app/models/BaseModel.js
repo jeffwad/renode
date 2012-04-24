@@ -6,6 +6,7 @@
 */
 var Base = require("lib/Base"),
     iter         = require("lib/iter"),
+    toArray      = iter.toArray,
     forEach      = iter.forEach;
 
 
@@ -15,9 +16,7 @@ module.exports = Base.create({
   //  properties
 
 
-  services: [
-    "socket"
-  ],
+  services: ["sync"],
 
 
   //  constructor
@@ -46,20 +45,25 @@ module.exports = Base.create({
 
   _syncMethod: function(methodName) {
 
-    var method = this[methodName].bind(this);
+    var method = this[methodName];
 
     this[methodName] = function() {
 
-      //this.socket.emit("/sync/" + this.id + "/" + methodName , arguments);
-      this.socket.emit("/sync/" + methodName , arguments);
+      //this.sync.emit("/sync/" + this.id + "/" + methodName , arguments);
+      this.sync.emit("/sync", {
+        methodName: methodName,
+        args: toArray(arguments)
+      });
       return method.apply(this, arguments);
     };
 
-    //this.socket.on("/sync/" + this.id + "/" + methodName , method);
-    this.socket.on("/sync/" + methodName , method);
+    //this.sync.on("/sync/" + this.id + "/" + methodName , method);
+    this.sync.on("/sync/" + methodName, function(data) {
+      console.log("evm wtf: ", data);
+      method.apply(this, data.args);
+
+    }.bind(this));
 
   }
-
-
 
 });

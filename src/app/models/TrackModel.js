@@ -53,6 +53,12 @@ module.exports = BaseModel.create({
 
 
   /**
+    @description  synchronisation api
+  */
+  syncApi: ["activateNextPattern"],
+
+
+  /**
     @description  constructor
   */
   __init__: function(data) {
@@ -64,7 +70,7 @@ module.exports = BaseModel.create({
     }
 
     this.activatePattern(0);
-    this.activateNextPattern(0);
+    this._activateNextPattern(0);
 
   },
 
@@ -87,7 +93,7 @@ module.exports = BaseModel.create({
   */
   activateNextPattern: function(index) {
 
-    this.nextPattern = this.patterns.getByIndex(index);
+    this._activateNextPattern(index);
 
   },
 
@@ -118,11 +124,20 @@ module.exports = BaseModel.create({
       pattern.reset();
     });
 
-  }
+  },
 
 
   //  private
 
+  /**
+    @description  sets the currently active pattern
+    @param        {String} id
+  */
+  _activateNextPattern: function(index) {
+
+    this.nextPattern = this.patterns.getByIndex(index);
+
+  }
 
 
 

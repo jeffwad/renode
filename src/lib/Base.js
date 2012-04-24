@@ -13,8 +13,8 @@ var EventMachine = require("lib/EventMachine"),
     utils        = require("lib/utils"),
     iter         = require("lib/iter"),
     Collection   = require("lib/Collection"),
-    forEach      = iter.forEach,
-    services = {};
+    service      = require("lib/service"),
+    forEach      = iter.forEach;
 
 module.exports = EventMachine.create({
 
@@ -49,14 +49,6 @@ module.exports = EventMachine.create({
       this._updateAccessors(data);
 
       this.id = utils.generateId();
-
-  },
-
-
-  //  public
-  registerService: function(key, service) {
-
-    services[key] = service;
 
   },
 
@@ -108,11 +100,11 @@ module.exports = EventMachine.create({
 
     object = object || this;
 
-    if(object.hasOwnProperty('accessors')) {
+    if (object.hasOwnProperty('accessors')) {
 
       forEach(object.accessors, function(accessor, name) {
 
-        if(!this.hasOwnProperty(name)) {
+        if (!this.hasOwnProperty(name)) {
 
           //  set the accessor definition
           Object.defineProperty(this, '__' + name, {
@@ -131,8 +123,10 @@ module.exports = EventMachine.create({
 
     }
 
+    //  get the prototype and test to see if there is an accessor
+    //  property anywhere on the prototype
     proto = Object.getPrototypeOf(object);
-    if(proto && proto.hasOwnProperty('accessors')) {
+    if (proto && proto.hasOwnProperty("accessors")) {
       this._initAccessors(proto);
     }
 
@@ -151,13 +145,13 @@ module.exports = EventMachine.create({
 
     object = object || this;
 
-    if(object.hasOwnProperty('hasMany')) {
+    if (object.hasOwnProperty('hasMany')) {
 
       forEach(object.hasMany, function(relation, name) {
 
         var capitalName = name.singularize().capitalize();
 
-        if(!this.hasOwnProperty(name)) {
+        if (!this.hasOwnProperty(name)) {
 
           //  create a non-enumerable accessor
           this._createAccessor(name, {
@@ -173,7 +167,7 @@ module.exports = EventMachine.create({
               var relatedModel,
                   factory = this["_" + name + "Factory"];
 
-              if(factory && typeof factory.create === "function") {
+              if (factory && typeof factory.create === "function") {
                 relatedModel = factory.create(data);
               }
               else {
@@ -232,8 +226,10 @@ module.exports = EventMachine.create({
 
     }
 
+    //  get the prototype and test to see if there is an hasMany
+    //  property anywhere on the prototype
     proto = Object.getPrototypeOf(object);
-    if(proto && proto.hasOwnProperty('hasMany')) {
+    if (proto && proto.hasOwnProperty("hasMany")) {
       this._initRelationships(proto);
     }
 
@@ -241,23 +237,41 @@ module.exports = EventMachine.create({
   },
 
 
-  //  sets up the services
-  _initServices: function() {
+  /**
+    @description  sets up the services accessor
+  */
+  _initServices: function(object) {
 
-    if(this.services) {
 
-      forEach(this.services, function(service) {
+    var proto;
 
-        Object.defineProperty(this, service, {
+    object = object || this;
 
-          get: function() {
-            return services[service];
-          }
+    if (object.hasOwnProperty('services')) {
 
-        });
+      forEach(object.services, function(serviceName) {
+
+        if (!this.hasOwnProperty(serviceName)) {
+
+          Object.defineProperty(this, serviceName, {
+
+            get: function() {
+              return service.locate(serviceName);
+            }
+
+          });
+
+        }
 
       }, this);
 
+    }
+
+    //  get the prototype and test to see if there is a services
+    //  property anywhere on the prototype
+    proto = Object.getPrototypeOf(object);
+    if (proto && proto !== EventMachine) {
+      this._initServices(proto);
     }
 
   },
@@ -271,8 +285,8 @@ module.exports = EventMachine.create({
   _updateAccessors: function(data) {
 
     forEach(this, function(accessor, name){
-
-      if(typeof data[name] !== "undefined") {
+      console.log(name);
+      if (typeof data[name] !== "undefined") {
         this[name] = data[name];
       }
 

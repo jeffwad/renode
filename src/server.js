@@ -12,22 +12,21 @@ require("lib/String");
 var http           = require("http"),
     nodeStatic     = require("node-static"),
     socket         = require("socket.io"),
-    midi           = require("midi"),
-    Base           = require("lib/Base"),
+    midi           = require("lib/midi"),
+    service        = require("lib/service"),
+    EventMachine   = require("lib/EventMachine"),
     SequencerModel = require("app/models/SequencerModel"),
     song           = require("song"),
-    io, sequencer, output, server, file;
+    io, sequencer, server, file, sync;
 
 
-// // Set up a new output.
-output = new midi.output();
-
-// // Count the available output ports.
-// Create a virtual input port.
-output.openVirtualPort("Renode");
-
-
-file = new(nodeStatic.Server)("htdocs", { cache: 0, headers: {"X-App":"Nodebeat!"} });
+//  set up the file server
+file = new(nodeStatic.Server)("htdocs", {
+  cache: 0,
+  headers: {
+    "X-App":"renode"
+  }
+});
 
 server = http.createServer(function (request, response) {
 
@@ -52,25 +51,26 @@ server.listen(8080);
 
 console.log("> node-static is listening on http://127.0.0.1:8080");
 
+//  register and set up services
+service.register("midi", midi);
+
+//  set up the socket
+sync = EventMachine.spawn();
+
 io = socket.listen(server);
 
 io.sockets.on("connection", function (socket) {
-  socket.on("play", function() {
-    sequencer.play();
+
+  socket.emit("/connection/initialised");
+
+  socket.on("/sync", function(data) {
+
+    sync.emit("/sync/" + data.methodName, data);
+    socket.broadcast.emit("/sync", data);
   });
-
-  socket.on("stop", function() {
-    sequencer.stop();
-  });
-
-  socket.on("pattern", function(data) {
-    sequencer.tracks.getByIndex(0).activateNextPattern(data.index);
-  });
-
-  Base.registerService("socket", socket);
-  sequencer = SequencerModel.spawn(song, output);
-
 
 });
 
 
+service.register("sync", sync);
+sequencer = SequencerModel.spawn(song);

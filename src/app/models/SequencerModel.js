@@ -14,24 +14,6 @@ module.exports = BaseModel.create({
 
 
   /**
-    @description  relationships
-  */
-  hasMany: {
-
-    tracks: TrackModel
-
-  },
-
-
-  // /**
-  //   @description  service
-  // */
-  // services: {
-  //   midi: "midiInterface"
-  // },
-
-
-  /**
     @description  accessors
   */
   accessors: {
@@ -53,24 +35,37 @@ module.exports = BaseModel.create({
     steps: {
       defaultValue : 128,
       type         : "number"
-    },
-
-    midiInterface: {
-      type: "object"
     }
 
   },
 
 
-  syncApi: [
-    "play", "stop"
-  ],
+  /**
+    @description  relationships
+  */
+  hasMany: {
+
+    tracks: TrackModel
+
+  },
+
+
+  /**
+    @description  services
+  */
+  services: ["midi"],
+
+
+  /**
+    @description  synchronisation api
+  */
+  syncApi: ["play", "stop"],
 
 
   /**
     @description  constructor
   */
-  __init__: function(data, output) {
+  __init__: function(data) {
 
     BaseModel.__init__.call(this, data);
 
@@ -80,9 +75,6 @@ module.exports = BaseModel.create({
 
     }
 
-    this.midiInterface = {
-      out: output
-    };
   },
 
 
@@ -106,6 +98,8 @@ module.exports = BaseModel.create({
   */
   play: function() {
 
+    console.log("play");
+
     if(this.playing) {
       return;
     }
@@ -120,6 +114,8 @@ module.exports = BaseModel.create({
     @description  stops the sequencer
   */
   stop: function() {
+
+    console.log("stop");
 
     clearTimeout(this._timer);
     forEach(this.tracks.items(), function(track) {
@@ -150,7 +146,7 @@ module.exports = BaseModel.create({
   */
   _playNote: function(track, note) {
 
-    this.midiInterface.out.sendMessage([track.midiOn, note.key, note.velocity]);
+    this.midi.output.sendMessage([track.midiOn, note.key, note.velocity]);
     setTimeout(this._stopNote.bind(this, track, note), note.duration);
 
   },
@@ -186,7 +182,7 @@ module.exports = BaseModel.create({
   */
   _stopNote: function(track, note) {
 
-    this.midiInterface.out.sendMessage([track.midiOff, note.key, this.VELOCITY_OFF]);
+    this.midi.output.sendMessage([track.midiOff, note.key, note.VELOCITY_OFF]);
 
   }
 
