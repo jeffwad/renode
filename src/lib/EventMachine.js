@@ -38,14 +38,6 @@ module.exports = EventEmitter.create({
   */
   __init__: function() {
 
-    Object.defineProperties(this, {
-      _events: {
-        value: {}
-      },
-      _maxListeners: {
-        value: 10
-      }
-    });
     //this._initListeners();
 
   },

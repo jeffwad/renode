@@ -9,10 +9,10 @@ var midi = require("midi"),
 
 // Set up a new output.
 output = new midi.output();
-output.openVirtualPort("renode:out");
+output.openVirtualPort("renode");
 
 input = new midi.input();
-input.openVirtualPort("renode:in");
+input.openVirtualPort("renode");
 
 exports.output = output;
 exports.input = input;

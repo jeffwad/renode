@@ -4,10 +4,10 @@
   @description  base model object
 
 */
-var Base = require("lib/Base"),
-    iter         = require("lib/iter"),
-    toArray      = iter.toArray,
-    forEach      = iter.forEach;
+var Base     = require("lib/Base"),
+    iter     = require("lib/iter"),
+    toArray  = iter.toArray,
+    forEach  = iter.forEach;
 
 
 
@@ -15,6 +15,7 @@ module.exports = Base.create({
 
   //  properties
 
+  accessors: {},
 
   services: ["sync"],
 
@@ -49,17 +50,20 @@ module.exports = Base.create({
 
     this[methodName] = function() {
 
-      //this.sync.emit("/sync/" + this.id + "/" + methodName , arguments);
+      console.log("/master/" + this.id + "/" + methodName);
+
       this.sync.emit("/sync", {
+        id        : this.id,
         methodName: methodName,
-        args: toArray(arguments)
+        args      : toArray(arguments)
       });
       return method.apply(this, arguments);
     };
 
-    //this.sync.on("/sync/" + this.id + "/" + methodName , method);
-    this.sync.on("/sync/" + methodName, function(data) {
-      console.log("evm wtf: ", data);
+    this.sync.on("/sync/" + this.id + "/" + methodName, function(data) {
+
+      console.log("/slave/" + this.id + "/" + methodName);
+
       method.apply(this, data.args);
 
     }.bind(this));

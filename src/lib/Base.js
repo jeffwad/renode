@@ -48,8 +48,6 @@ module.exports = EventMachine.create({
       this._initServices();
       this._updateAccessors(data);
 
-      this.id = utils.generateId();
-
   },
 
 
@@ -129,7 +127,6 @@ module.exports = EventMachine.create({
     if (proto && proto.hasOwnProperty("accessors")) {
       this._initAccessors(proto);
     }
-
 
   },
 
@@ -285,7 +282,7 @@ module.exports = EventMachine.create({
   _updateAccessors: function(data) {
 
     forEach(this, function(accessor, name){
-      console.log(name);
+
       if (typeof data[name] !== "undefined") {
         this[name] = data[name];
       }

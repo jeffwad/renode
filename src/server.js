@@ -65,7 +65,7 @@ io.sockets.on("connection", function (socket) {
 
   socket.on("/sync", function(data) {
 
-    sync.emit("/sync/" + data.methodName, data);
+    sync.emit("/sync/" + data.id + "/" + data.methodName, data);
     socket.broadcast.emit("/sync", data);
   });
 

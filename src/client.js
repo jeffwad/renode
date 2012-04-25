@@ -13,14 +13,12 @@ var service        = require("lib/service"),
     SequencerModel = require("app/models/SequencerModel"),
     song           = require("song"),
     EventMachine   = require("lib/EventMachine"),
-    sequencer;
+    sequencer, socket, sync;
 
 
 
-var socket = io.connect("http://localhost");
-    //  set up the socket
-
-    var sync = EventMachine.spawn();
+socket = io.connect("http://localhost");
+sync = EventMachine.spawn();
 
 //var socket = io.connect('http://192.168.1.82');
 
@@ -32,10 +30,7 @@ socket.on("/connection/initialised", function (data) {
 
 socket.on("/sync", function(data) {
 
-  console.log('wtf: ', data);
-
-  sync.emit("/sync/" + data.methodName, data);
-  //socket.emit("/sync", data);
+  sync.emit("/sync/" + data.id + "/" + data.methodName, data);
 
 });
 
@@ -49,10 +44,10 @@ sync.on("/sync", function(data) {
 service.register("sync", sync);
 service.register("midi", {
   input: {recieveMessage: function() {}},
-  output: {sendMessage: function() {console.log(arguments);}}
+  output: {sendMessage: function() {}}
 });
-sequencer = SequencerModel.spawn(song);
 
+sequencer = SequencerModel.spawn(song);
 
 
 document.getElementById('play').addEventListener('click', function(e) {

@@ -98,8 +98,6 @@ module.exports = BaseModel.create({
   */
   play: function() {
 
-    console.log("play");
-
     if(this.playing) {
       return;
     }
@@ -114,8 +112,6 @@ module.exports = BaseModel.create({
     @description  stops the sequencer
   */
   stop: function() {
-
-    console.log("stop");
 
     clearTimeout(this._timer);
     forEach(this.tracks.items(), function(track) {
