@@ -8,7 +8,9 @@
 */
 require("lib/Object");
 
-var EventEmitter = require("events").EventEmitter;
+var EventEmitter = require("events").EventEmitter,
+    iter         = require("lib/iter"),
+    forEach      = iter.forEach;
 
 
 /**
@@ -38,7 +40,13 @@ module.exports = EventEmitter.create({
   */
   __init__: function() {
 
-    //this._initListeners();
+    Object.defineProperty(this, "handlers", {
+
+      value: {}
+
+    });
+
+    this._initListeners();
 
   },
 
@@ -85,7 +93,7 @@ module.exports = EventEmitter.create({
   */
   destroy: function() {
 
-    forEach(this._handlers, function(handler){
+    forEach(this.handlers, function(handler){
       handler.stop();
       handler.destroy();
     });
@@ -99,9 +107,13 @@ module.exports = EventEmitter.create({
   */
   _initListeners: function() {
 
-    this._handlers = map(this.subscribers || {}, function(methodName, event) {
+    forEach(this.handlers, this.subscribers || {}, function(methodName, event) {
 
-      return this.on(event, this[eventName].bind(this));
+      if(typeof this[methodName] !== "function") {
+        throw ReferenceError.spawn(methodName + ": is not a method on this object");
+      }
+
+      this.handlers[event] = this.on(event, this[methodName].bind(this));
 
     }, this);
 

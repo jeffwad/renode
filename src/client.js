@@ -7,12 +7,14 @@
 */
 require("lib/Object");
 require("lib/String");
+require("lib/dom");
 
 //  start our server
-var service        = require("lib/service"),
-    SequencerModel = require("app/models/SequencerModel"),
-    song           = require("song"),
-    EventMachine   = require("lib/EventMachine"),
+var service            = require("lib/service"),
+    EventMachine       = require("lib/EventMachine"),
+    SequencerModel     = require("app/models/SequencerModel"),
+    SequencerComponent = require("app/ui/SequencerComponent"),
+    song               = require("song"),
     sequencer, socket, sync;
 
 
@@ -47,23 +49,7 @@ service.register("midi", {
   output: {sendMessage: function() {}}
 });
 
-sequencer = SequencerModel.spawn(song);
 
-
-document.getElementById('play').addEventListener('click', function(e) {
-  sequencer.play();
-  e.preventDefault();
-}, false);
-document.getElementById('stop').addEventListener('click', function(e) {
-  sequencer.stop();
-  e.preventDefault();
-}, false);
-document.getElementById('one').addEventListener('click', function(e) {
-  sequencer.tracks.getByIndex(0).activateNextPattern(0);
-  e.preventDefault();
-}, false);
-document.getElementById('two').addEventListener('click', function(e) {
-  sequencer.tracks.getByIndex(0).activateNextPattern(1);
-  e.preventDefault();
-}, false);
-
+sequencer = SequencerComponent.spawn(SequencerModel.spawn(song));
+sequencer.render(document.body);
+sequencer.addEventListeners();

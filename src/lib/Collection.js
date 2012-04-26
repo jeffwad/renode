@@ -9,7 +9,7 @@ var EventMachine = require("lib/EventMachine"),
     indexOf      = iter.indexOf,
     some         = iter.some;
 
-module.exports = {}.create({
+module.exports = EventMachine.create({
 
 
   /**
@@ -17,7 +17,6 @@ module.exports = {}.create({
   */
   __init__: function(type) {
 
-    EventMachine.__init__.apply(this);
     Object.defineProperties(this, {
       '_type': {
         value: type
@@ -104,8 +103,6 @@ module.exports = {}.create({
     }
     return false;
   }
-
-
 
 
 });

@@ -173,6 +173,8 @@ module.exports = EventMachine.create({
 
               this[name].add(relatedModel);
 
+              return relatedModel;
+
             },
             enumerable: false
 

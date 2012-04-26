@@ -60,27 +60,29 @@ function iterator(object){
 
 function exhaust(object, func){
 
-  var i, l, r, iterable;
+  var i, l, r, key, keys;
   try {
     if (typeof object.length === 'number') {
-      for(i = 0, l = object.length; i < l; i++) {
+      for (i = 0, l = object.length; i < l; i++) {
         func(object[i], i);
       }
     }
     else {
-      iterable = iterator(object);
-      if (iterable) {
+      if (typeof object.__iterator__ === "function") {
+        object = object.__iterator__();
+      }
+      if (typeof object.next === "function") {
         i = 0;
         while (true) {
-          r = iterable.next();
+          r = object.next();
           func(r[0], r[1]);
         }
       }
       else {
-        for(i in object) {
-          if(object.hasOwnProperty(i)) {
-            func(object[i], i);
-          }
+        keys = Object.keys(object);
+        for (i = 0, l = keys.length; i < l; i++) {
+          key = keys[i];
+          func(object[key], key);
         }
       }
     }
@@ -229,7 +231,7 @@ function reduce(ret, o, func){
     }
     catch (e) {
       if (e === StopIteration) {
-        throw new TypeError("reduce() of sequence with no initial value");
+        throw TypeError.spawn("reduce() of sequence with no initial value");
       }
       throw e;
     }

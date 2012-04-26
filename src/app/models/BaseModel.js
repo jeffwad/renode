@@ -48,6 +48,7 @@ module.exports = Base.create({
 
     var method = this[methodName];
 
+
     this[methodName] = function() {
 
       console.log("/master/" + this.id + "/" + methodName);
@@ -57,8 +58,11 @@ module.exports = Base.create({
         methodName: methodName,
         args      : toArray(arguments)
       });
+
       return method.apply(this, arguments);
+
     };
+
 
     this.sync.on("/sync/" + this.id + "/" + methodName, function(data) {
 

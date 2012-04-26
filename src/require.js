@@ -372,62 +372,55 @@
 
       var exports, module;
 
-      try {
+      delete loading[moduleName];
+      uninitialised[moduleName] = true;
 
-        delete loading[moduleName];
-        uninitialised[moduleName] = true;
+      if(typeof def === "undefined") {
+        def = dependencies;
+        dependencies = [];
+      }
 
-        if(typeof def === "undefined") {
-          def = dependencies;
-          dependencies = [];
-        }
+      // test to see if all the modules dependencies are loaded
+      dependencies = dependencies.filter(function(module) {
 
-        // test to see if all the modules dependencies are loaded
-        dependencies = dependencies.filter(function(module) {
+        if(!modules[module]) {
 
-          if(!modules[module]) {
-
-            em.once("/module/initialised" + module, function() {
-              define(moduleName, dependencies, def);
-            });
-            if (loading[module] || uninitialised[module]) {
-              return true;
+          em.once("/module/initialised" + module, function() {
+            define(moduleName, dependencies, def);
+          });
+          if (loading[module] || uninitialised[module]) {
+            return true;
+          }
+          else {
+            if(/\.\w{2,4}$/.test(module)) {
+              loadText(module);
             }
             else {
-              if(/\.\w{2,3}$/.test(module)) {
-                loadText(module);
-              }
-              else {
-                load(module);
-              }
-              return true;
+              load(module);
             }
+            return true;
           }
-          return false;
-        });
-
-
-        //  if there are no unloaded dependencies initialise the module
-        if(dependencies.length === 0 && !modules[moduleName]) {
-
-          delete uninitialised[moduleName];
-
-          exports = {};
-          module = {path: moduleName};
-
-          def(require, exports, module);
-
-          register(moduleName, module.exports || exports, module);
-
-          em.emit("/module/initialised" + moduleName, exports);
-
         }
+        return false;
+      });
+
+
+      //  if there are no unloaded dependencies initialise the module
+      if(dependencies.length === 0 && !modules[moduleName]) {
+
+        delete uninitialised[moduleName];
+
+        exports = {};
+        module = {path: moduleName};
+
+        def(require, exports, module);
+
+        register(moduleName, module.exports || exports, module);
+
+        em.emit("/module/initialised" + moduleName, exports);
 
       }
-      catch(e) {
-        console.error(moduleName, e);
-        console.trace();
-      }
+
     }
 
     // attach api

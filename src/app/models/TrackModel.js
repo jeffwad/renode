@@ -69,8 +69,8 @@ module.exports = BaseModel.create({
       forEach(data.patterns, this.createPattern, this);
     }
 
-    this.activatePattern(0);
-    this._activateNextPattern(0);
+    this.activatePattern(this.patterns.getByIndex(0).id);
+    this._activateNextPattern(this.patterns.getByIndex(0).id);
 
   },
 
@@ -81,9 +81,9 @@ module.exports = BaseModel.create({
     @description  sets the currently active pattern
     @param        {String} id
   */
-  activatePattern: function(index) {
+  activatePattern: function(id) {
 
-    this.activePattern = this.patterns.getByIndex(index);
+    this.activePattern = this.patterns.getById(id);
 
   },
 
@@ -91,9 +91,9 @@ module.exports = BaseModel.create({
     @description  sets the currently active pattern
     @param        {String} id
   */
-  activateNextPattern: function(index) {
+  activateNextPattern: function(id) {
 
-    this._activateNextPattern(index);
+    this._activateNextPattern(id);
 
   },
 
@@ -133,9 +133,9 @@ module.exports = BaseModel.create({
     @description  sets the currently active pattern
     @param        {String} id
   */
-  _activateNextPattern: function(index) {
+  _activateNextPattern: function(id) {
 
-    this.nextPattern = this.patterns.getByIndex(index);
+    this.nextPattern = this.patterns.getById(id);
 
   }
 
