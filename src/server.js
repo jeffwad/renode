@@ -61,7 +61,9 @@ io = socket.listen(server);
 
 io.sockets.on("connection", function (socket) {
 
-  socket.emit("/connection/initialised");
+  socket.emit("/connection/initialised", {
+    song: song
+  });
 
   socket.on("/sync", function(data) {
 

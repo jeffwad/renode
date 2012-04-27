@@ -51,7 +51,7 @@ module.exports = BaseModel.create({
 
     forEach(range(0, this.stepCount), function(step) {
 
-      this.createStep(data.steps[step] || []);
+      this.createStep(data.steps[step] || {});
 
     }, this);
 

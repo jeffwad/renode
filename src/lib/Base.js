@@ -48,6 +48,13 @@ module.exports = EventMachine.create({
       this._initServices();
       this._updateAccessors(data);
 
+      //  if the incoming data has no id, generate one, and add it to the data object
+      //  as the data object is being passed around all client from the server to instantiate
+      //  the synced model
+      //  todo: add serialise function and remove the patch on the data.id
+      if(typeof data.id === "undefined") {
+        this.id = data.id = utils.generateId();
+      }
   },
 
 
@@ -93,6 +100,41 @@ module.exports = EventMachine.create({
     @param        {object || undefined} object
   */
   _initAccessors: function(object) {
+
+    // var object = this;
+
+    // while (object) {
+
+    //   if (object.hasOwnProperty('accessors')) {
+
+    //     forEach(object.accessors, function(accessor, name) {
+    //       console.log(name);
+
+    //       if (!this.hasOwnProperty(name)) {
+
+    //         //  set the accessor definition
+    //         Object.defineProperty(this, '__' + name, {
+
+    //           value: accessor,
+    //           enumerable: false
+
+    //         });
+
+    //         //  create an enumerable accessor
+    //         this._createAccessor(name, accessor, true);
+
+    //       }
+
+    //     }, this);
+
+    //   }
+
+    //   //  get the prototype and test to see if there is an accessor
+    //   //  property anywhere on the prototype
+    //   object = Object.getPrototypeOf(object);
+
+    // }
+
 
     var proto;
 
