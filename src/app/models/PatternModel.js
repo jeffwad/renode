@@ -49,12 +49,6 @@ module.exports = BaseModel.create({
 
     BaseModel.__init__.call(this, data);
 
-    forEach(range(0, this.stepCount), function(step) {
-
-      this.createStep(data.steps[step] || {});
-
-    }, this);
-
   },
 
 
@@ -82,11 +76,23 @@ module.exports = BaseModel.create({
 
     this.currentStep = 1;
 
-  }
+  },
 
 
   //  private
 
+  /**
+    @description  overwrite the Base#_createChildEntities
+  */
+  _createChildEntities: function(data) {
+
+    forEach(range(0, this.stepCount), function(step) {
+
+      this.createStep(data.steps[step] || {});
+
+    }, this);
+
+  }
 
 
 

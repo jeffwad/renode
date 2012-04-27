@@ -14,9 +14,10 @@ var EventMachine = require("lib/EventMachine"),
     iter         = require("lib/iter"),
     Collection   = require("lib/Collection"),
     service      = require("lib/service"),
-    forEach      = iter.forEach;
+    forEach      = iter.forEach,
+    Base;
 
-module.exports = EventMachine.create({
+Base = EventMachine.create({
 
 
   /**
@@ -47,6 +48,8 @@ module.exports = EventMachine.create({
       this._initRelationships();
       this._initServices();
       this._updateAccessors(data);
+      this._createChildEntities(data);
+
 
       //  if the incoming data has no id, generate one, and add it to the data object
       //  as the data object is being passed around all client from the server to instantiate
@@ -94,83 +97,80 @@ module.exports = EventMachine.create({
   },
 
 
+
   /**
-    @description  sets up the accessors on the model
-                  recursing through all the inherited models
-    @param        {object || undefined} object
+    @description  to be implemented up the prototype chain
   */
-  _initAccessors: function(object) {
+  _createChild: function() {
 
-    // var object = this;
+    throw Error.spawn("Base#_createChild: to be implemented up the prototype chain");
 
-    // while (object) {
-
-    //   if (object.hasOwnProperty('accessors')) {
-
-    //     forEach(object.accessors, function(accessor, name) {
-    //       console.log(name);
-
-    //       if (!this.hasOwnProperty(name)) {
-
-    //         //  set the accessor definition
-    //         Object.defineProperty(this, '__' + name, {
-
-    //           value: accessor,
-    //           enumerable: false
-
-    //         });
-
-    //         //  create an enumerable accessor
-    //         this._createAccessor(name, accessor, true);
-
-    //       }
-
-    //     }, this);
-
-    //   }
-
-    //   //  get the prototype and test to see if there is an accessor
-    //   //  property anywhere on the prototype
-    //   object = Object.getPrototypeOf(object);
-
-    // }
+  },
 
 
-    var proto;
 
-    object = object || this;
+  /**
+    @description  create child entities
+  */
+  _createChildEntities: function(data) {
 
-    if (object.hasOwnProperty('accessors')) {
+    forEach(["hasMany"], function(relationship){
 
-      forEach(object.accessors, function(accessor, name) {
+      if(typeof this[relationship] === "undefined") return;
 
-        if (!this.hasOwnProperty(name)) {
+      forEach(this[relationship], function(relation, name) {
 
-          //  set the accessor definition
-          Object.defineProperty(this, '__' + name, {
-
-            value: accessor,
-            enumerable: false
-
-          });
-
-          //  create an enumerable accessor
-          this._createAccessor(name, accessor, true);
-
-        }
+        this._createChild(name, data);
 
       }, this);
 
-    }
+    }, this);
 
-    //  get the prototype and test to see if there is an accessor
-    //  property anywhere on the prototype
-    proto = Object.getPrototypeOf(object);
-    if (proto && proto.hasOwnProperty("accessors")) {
-      this._initAccessors(proto);
+  },
+
+
+
+  /**
+    @description  sets up the accessors on the model
+                  recursing through all the inherited models
+  */
+  _initAccessors: function() {
+
+    var object = this;
+
+    while (object) {
+
+      if (object.hasOwnProperty('accessors')) {
+
+        forEach(object.accessors, function(accessor, name) {
+
+          if (!this.hasOwnProperty(name)) {
+
+            //  set the accessor definition
+            Object.defineProperty(this, '__' + name, {
+
+              value: accessor,
+              enumerable: false
+
+            });
+
+            //  create an enumerable accessor
+            this._createAccessor(name, accessor, true);
+
+          }
+
+        }, this);
+
+      }
+
+      //  get the prototype and test to see if there is an accessor
+      //  property anywhere on the prototype
+      object = Object.getPrototypeOf(object);
+
     }
 
   },
+
 
 
   /**
@@ -178,141 +178,139 @@ module.exports = EventMachine.create({
                   recursing through all the inherited models
     @param        {object || undefined} object
   */
-  _initRelationships: function(object) {
+  _initRelationships: function() {
 
-    var proto;
+    var object = this;
 
-    object = object || this;
+    while (object) {
 
-    if (object.hasOwnProperty('hasMany')) {
+      if (object.hasOwnProperty('hasMany')) {
 
-      forEach(object.hasMany, function(relation, name) {
+        forEach(object.hasMany, function(relation, name) {
 
-        var capitalName = name.singularize().capitalize();
+          var capitalName = name.singularize().capitalize();
 
-        if (!this.hasOwnProperty(name)) {
+          if (!this.hasOwnProperty(name)) {
 
-          //  create a non-enumerable accessor
-          this._createAccessor(name, {
-            'defaultValue': Collection.spawn(relation),
-            'type'        : Collection
-          });
+            //  create a non-enumerable accessor
+            this._createAccessor(name, {
+              'defaultValue': Collection.spawn(relation),
+              'type'        : Collection
+            });
 
-          //  create the factory methods
-          Object.defineProperty(this, "create" + capitalName, {
+            //  create the factory methods
+            Object.defineProperty(this, "create" + capitalName, {
 
-            value: function(data) {
+              value: function(data) {
 
-              var relatedModel,
-                  factory = this["_" + name + "Factory"];
+                var relatedModel,
+                    factory = this["_" + name + "Factory"];
 
-              if (factory && typeof factory.create === "function") {
-                relatedModel = factory.create(data);
-              }
-              else {
-                relatedModel = relation.spawn(data);
-              }
+                if (factory && typeof factory.create === "function") {
+                  relatedModel = factory.create(data);
+                }
+                else {
+                  relatedModel = relation.spawn(data);
+                }
 
-              this[name].add(relatedModel);
+                this[name].add(relatedModel);
 
-              return relatedModel;
+                return relatedModel;
 
-            },
-            enumerable: false
+              },
+              enumerable: false
 
-          });
+            });
 
-          Object.defineProperty(this, "remove" + capitalName, {
+            Object.defineProperty(this, "remove" + capitalName, {
 
-            value: function(model) {
+              value: function(model) {
 
-              this[name].remove(model);
+                this[name].remove(model);
 
-            },
-            enumerable: false
+              },
+              enumerable: false
 
-          });
+            });
 
-          Object.defineProperty(this, "remove" + capitalName + "ByIndex", {
+            Object.defineProperty(this, "remove" + capitalName + "ByIndex", {
 
-            value: function(index) {
+              value: function(index) {
 
-              var collection = this[name];
+                var collection = this[name];
 
-              collection.remove(collection.getByIndex(index));
+                collection.remove(collection.getByIndex(index));
 
-            },
-            enumerable: false
+              },
+              enumerable: false
 
-          });
+            });
 
-          Object.defineProperty(this, "remove" + capitalName + "ById", {
+            Object.defineProperty(this, "remove" + capitalName + "ById", {
 
-            value: function(id) {
+              value: function(id) {
 
-              var collection = this[name];
+                var collection = this[name];
 
-              collection.remove(collection.getById(id));
+                collection.remove(collection.getById(id));
 
-            },
-            enumerable: false
+              },
+              enumerable: false
 
-          });
-
-
-        }
-
-      }, this);
+            });
 
 
-    }
+          }
 
-    //  get the prototype and test to see if there is an hasMany
-    //  property anywhere on the prototype
-    proto = Object.getPrototypeOf(object);
-    if (proto && proto.hasOwnProperty("hasMany")) {
-      this._initRelationships(proto);
+        }, this);
+
+
+      }
+
+      //  get the prototype and test to see if there is an accessor
+      //  property anywhere on the prototype
+      object = Object.getPrototypeOf(object);
+
     }
 
 
   },
 
 
+
   /**
     @description  sets up the services accessor
   */
-  _initServices: function(object) {
+  _initServices: function() {
 
+    var object = this;
 
-    var proto;
+    while (object) {
 
-    object = object || this;
+      if (object.hasOwnProperty('services')) {
 
-    if (object.hasOwnProperty('services')) {
+        forEach(object.services, function(serviceName) {
 
-      forEach(object.services, function(serviceName) {
+          if (!this.hasOwnProperty(serviceName)) {
 
-        if (!this.hasOwnProperty(serviceName)) {
+            Object.defineProperty(this, serviceName, {
 
-          Object.defineProperty(this, serviceName, {
+              get: function() {
+                return service.locate(serviceName);
+              }
 
-            get: function() {
-              return service.locate(serviceName);
-            }
+            });
 
-          });
+          }
 
-        }
+        }, this);
 
-      }, this);
+      }
 
-    }
+      //  get the prototype and test to see if there is an accessor
+      //  property anywhere on the prototype
+      object = Object.getPrototypeOf(object);
 
-    //  get the prototype and test to see if there is a services
-    //  property anywhere on the prototype
-    proto = Object.getPrototypeOf(object);
-    if (proto && proto !== EventMachine) {
-      this._initServices(proto);
     }
 
   },
@@ -335,6 +333,6 @@ module.exports = EventMachine.create({
 
   }
 
-
 });
 
+module.exports = Base;

@@ -69,12 +69,6 @@ module.exports = BaseModel.create({
 
     BaseModel.__init__.call(this, data);
 
-    if(data.tracks) {
-
-      forEach(data.tracks, this.createTrack, this);
-
-    }
-
   },
 
 
