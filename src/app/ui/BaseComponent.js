@@ -51,8 +51,6 @@ module.exports = Base.create({
       id: utils.generateId()
     });
 
-    this._createComponents();
-
   },
 
 
@@ -68,11 +66,13 @@ module.exports = Base.create({
     this._addEventListeners();
 
     if(this.children) {
+
       forEach(this.children.items(), function(child) {
 
         child.addEventListeners();
 
       });
+
     }
   },
 
@@ -143,29 +143,17 @@ module.exports = Base.create({
   },
 
 
+  _createChild: function(name) {
 
-  /**
-    @description  create a set of components from a combination of our relationships and model
-                  and register them as children
-  */
-  _createComponents: function() {
+    var factoryMethodName = "create" + name.singularize().capitalize();
 
-    forEach(["hasMany"], function(relationship){
-
-      forEach(this[relationship], function(relation, name) {
-
-        var factoryMethodName = "create" + name.singularize().capitalize();
-
-        if(this.model[name]) {
-          forEach(this.model[name].items(), this[factoryMethodName], this);
-          forEach(this[name].items(), this._registerChild, this);
-        }
-
-      }, this);
-
-    }, this);
+    if(this.model[name]) {
+      forEach(this.model[name].items(), this[factoryMethodName], this);
+      forEach(this[name].items(), this._registerChild, this);
+    }
 
   },
+
 
 
   /**
@@ -233,6 +221,7 @@ module.exports = Base.create({
     child.parent = this;
 
   },
+
 
   _update: function() {
 

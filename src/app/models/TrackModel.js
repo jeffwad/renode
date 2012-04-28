@@ -65,10 +65,6 @@ module.exports = BaseModel.create({
 
     BaseModel.__init__.call(this, data);
 
-    if(data.patterns) {
-      forEach(data.patterns, this.createPattern, this);
-    }
-
     this.activatePattern(this.patterns.getByIndex(0).id);
     this._activateNextPattern(this.patterns.getByIndex(0).id);
 

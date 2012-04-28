@@ -15,8 +15,6 @@ module.exports = Base.create({
 
   //  properties
 
-  accessors: {},
-
   services: ["sync"],
 
 
@@ -35,6 +33,17 @@ module.exports = Base.create({
 
 
   //  private
+
+
+  _createChild: function(name, data) {
+
+    var factoryMethodName = "create" + name.singularize().capitalize();
+
+    if(data[name]) {
+      forEach(data[name], this[factoryMethodName], this);
+    }
+
+  },
 
   _syncClientAndServer: function() {
 

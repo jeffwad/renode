@@ -26,7 +26,10 @@ sync = EventMachine.spawn();
 
 socket.on("/connection/initialised", function (data) {
 
-  console.log("/connection/initialised");
+  sequencer = SequencerComponent.spawn(SequencerModel.spawn(data.song));
+  sequencer.render(document.body);
+  sequencer.addEventListeners();
+
 
 });
 
@@ -48,8 +51,3 @@ service.register("midi", {
   input: {recieveMessage: function() {}},
   output: {sendMessage: function() {}}
 });
-
-
-sequencer = SequencerComponent.spawn(SequencerModel.spawn(song));
-sequencer.render(document.body);
-sequencer.addEventListeners();

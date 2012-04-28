@@ -6,6 +6,9 @@
 */
 var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
 
+/**
+  @description  generates an id
+*/
 exports.generateId = function () {
 
   var uuid = [], r, i;

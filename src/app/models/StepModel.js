@@ -13,7 +13,6 @@ module.exports = BaseModel.create({
 
   //  properties
 
-
   /**
     @description  relationships
   */
@@ -27,11 +26,9 @@ module.exports = BaseModel.create({
   /**
     @description  constructor
   */
-  __init__: function(notes) {
+  __init__: function(data) {
 
-    BaseModel.__init__.call(this);
-
-    forEach(notes, this.createNote, this);
+    BaseModel.__init__.call(this, data);
 
   }
 
