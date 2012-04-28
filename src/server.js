@@ -13,6 +13,7 @@ var http           = require("http"),
     nodeStatic     = require("node-static"),
     socket         = require("socket.io"),
     midi           = require("lib/midi"),
+    registry       = require("lib/registry"),
     service        = require("lib/service"),
     EventMachine   = require("lib/EventMachine"),
     SequencerModel = require("app/models/SequencerModel"),
@@ -51,9 +52,6 @@ server.listen(8080);
 
 console.log("> node-static is listening on http://127.0.0.1:8080");
 
-//  register and set up services
-service.register("midi", midi);
-
 //  set up the socket
 sync = EventMachine.spawn();
 
@@ -67,12 +65,17 @@ io.sockets.on("connection", function (socket) {
 
   socket.on("/sync", function(data) {
 
-    sync.emit("/sync/" + data.id + "/" + data.methodName, data);
+    console.log("/slave/" + data.id + "/" + data.methodName);
+
+    var object = registry.get(data.id);
+    object[data.methodName].sync.apply(object, data.args);
+
     socket.broadcast.emit("/sync", data);
   });
 
 });
 
-
+service.register("registry", registry);
 service.register("sync", sync);
+service.register("midi", midi);
 sequencer = SequencerModel.spawn(song);

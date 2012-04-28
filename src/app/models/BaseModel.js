@@ -15,7 +15,7 @@ module.exports = Base.create({
 
   //  properties
 
-  services: ["sync"],
+  services: ["sync", "registry"],
 
 
   //  constructor
@@ -28,6 +28,8 @@ module.exports = Base.create({
     Base.__init__.call(this, data);
 
     this._syncClientAndServer();
+
+    this.registry.add(this);
 
   },
 
@@ -57,7 +59,6 @@ module.exports = Base.create({
 
     var method = this[methodName];
 
-
     this[methodName] = function() {
 
       console.log("/master/" + this.id + "/" + methodName);
@@ -72,14 +73,9 @@ module.exports = Base.create({
 
     };
 
-
-    this.sync.on("/sync/" + this.id + "/" + methodName, function(data) {
-
-      console.log("/slave/" + this.id + "/" + methodName);
-
-      method.apply(this, data.args);
-
-    }.bind(this));
+    //  attach the original method to the wrapped one to enable
+    //  the sync api to access the original one
+    this[methodName].sync = method;
 
   }
 
