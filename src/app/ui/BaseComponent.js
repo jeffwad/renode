@@ -9,7 +9,8 @@
 var Base    = require("lib/Base"),
     iter    = require("lib/iter"),
     utils   = require("lib/utils"),
-    forEach = iter.forEach;
+    forEach = iter.forEach,
+    imap    = iter.imap;
 
 
 module.exports = Base.create({
@@ -146,6 +147,7 @@ module.exports = Base.create({
     if(this.model[name]) {
       forEach(this.model[name].items(), this[factoryMethodName], this);
       forEach(this[name].items(), this._registerChild, this);
+      // forEach(imap(this.model[name].items(), this[factoryMethodName].bind(this)), this._registerChild, this);
     }
 
   },
