@@ -114,7 +114,7 @@ Base = EventMachine.create({
   */
   _createChildEntities: function(data) {
 
-    forEach(["hasMany"], function(relationship){
+    forEach(["hasMany", "hasOne"], function(relationship){
 
       if(typeof this[relationship] === "undefined") return;
 

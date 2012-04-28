@@ -34,10 +34,6 @@ module.exports = Base.create({
 
   },
 
-
-  services: [],
-
-
   //  public
 
 

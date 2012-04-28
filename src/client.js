@@ -10,7 +10,8 @@ require("lib/String");
 require("lib/dom");
 
 //  start our server
-var service            = require("lib/service"),
+var registry           = require("lib/registry"),
+    service            = require("lib/service"),
     EventMachine       = require("lib/EventMachine"),
     SequencerModel     = require("app/models/SequencerModel"),
     SequencerComponent = require("app/ui/SequencerComponent"),
@@ -35,7 +36,10 @@ socket.on("/connection/initialised", function (data) {
 
 socket.on("/sync", function(data) {
 
-  sync.emit("/sync/" + data.id + "/" + data.methodName, data);
+  console.log("/slave/" + data.id + "/" + data.methodName);
+
+  var object = registry.get(data.id);
+  object[data.methodName].sync.apply(object, data.args);
 
 });
 
@@ -45,7 +49,7 @@ sync.on("/sync", function(data) {
 
 });
 
-
+service.register("registry", registry);
 service.register("sync", sync);
 service.register("midi", {
   input: {recieveMessage: function() {}},
