@@ -73,6 +73,14 @@ io.sockets.on("connection", function (socket) {
     socket.broadcast.emit("/sync", data);
   });
 
+  sync.on("/sync", function(data) {
+
+    console.log("/master/" + data.id + "/" + data.methodName);
+
+    socket.broadcast.emit("/sync", data);
+  });
+
+
 });
 
 service.register("registry", registry);

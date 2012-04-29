@@ -290,7 +290,7 @@ function chain(args) {
   };
 }
 
-function imap(iterable, func){
+function imap(iterable, func, scope){
 
   iterable = iterator(iterable);
 

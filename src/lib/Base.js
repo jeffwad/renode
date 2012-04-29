@@ -85,6 +85,10 @@ Base = EventMachine.create({
         }
 
         this._data[name] = value;
+        this.emit("update", {
+          accessor: name,
+          value: value
+        });
 
       },
       enumerable: !! enumerable

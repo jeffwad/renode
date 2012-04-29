@@ -55,7 +55,7 @@ module.exports = BaseModel.create({
   /**
     @description  synchronisation api
   */
-  syncApi: ["activateNextPattern"],
+  syncApi: ["activatePattern", "activateNextPattern", "switchPattern"],
 
 
   /**
@@ -79,7 +79,9 @@ module.exports = BaseModel.create({
   */
   activatePattern: function(id) {
 
-    this.activePattern = this.patterns.getById(id);
+    var pattern = this.patterns.getById(id);
+    pattern.playing();
+    this.activePattern = pattern;
 
   },
 
@@ -102,7 +104,7 @@ module.exports = BaseModel.create({
 
     if(this.activePattern.currentStep === 1) {
       if(this.activePattern !== this.nextPattern) {
-        this.activePattern = this.nextPattern;
+        this.switchPattern();
       }
     }
 
@@ -122,6 +124,12 @@ module.exports = BaseModel.create({
 
   },
 
+  switchPattern: function() {
+    this.activePattern.stopped();
+    this.activePattern = this.nextPattern;
+    this.activePattern.playing();
+  },
+
 
   //  private
 
@@ -131,7 +139,9 @@ module.exports = BaseModel.create({
   */
   _activateNextPattern: function(id) {
 
-    this.nextPattern = this.patterns.getById(id);
+    var pattern = this.patterns.getById(id);
+    pattern.pending();
+    this.nextPattern = pattern;
 
   }
 

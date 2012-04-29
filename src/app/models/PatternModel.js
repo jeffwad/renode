@@ -37,9 +37,19 @@ module.exports = BaseModel.create({
     stepCount: {
       defaultValue : 128,
       type         : "number"
+    },
+
+    state: {
+      defaultValue : "stopped",
+      type         : "string"
     }
 
   },
+
+
+  PENDING: "pending",
+  PLAYING: "playing",
+  STOPPED: "stopped",
 
 
   /**
@@ -68,6 +78,22 @@ module.exports = BaseModel.create({
     return notes;
 
   },
+
+
+  pending: function() {
+    this.state = this.PENDING;
+  },
+
+
+  playing: function() {
+    this.state = this.PLAYING;
+  },
+
+
+  stopped: function() {
+    this.state = this.STOPPED;
+  },
+
 
   /**
     @description  reset the pattern

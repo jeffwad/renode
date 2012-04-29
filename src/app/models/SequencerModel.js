@@ -92,7 +92,7 @@ module.exports = BaseModel.create({
   */
   play: function() {
 
-    if(this.playing) {
+    if(this.playing || typeof window !== "undefined") {
       return;
     }
     this.playing = true;

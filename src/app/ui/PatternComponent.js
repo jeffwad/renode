@@ -23,6 +23,10 @@ module.exports = BaseComponent.create({
 
     model: {
       type: PatternModel
+    },
+
+    state: {
+      type: "string"
     }
 
   },
@@ -44,7 +48,7 @@ module.exports = BaseComponent.create({
   /**
     @description  services
   */
-  services: [],
+  //services: [],
 
 
   //  public
@@ -56,6 +60,19 @@ module.exports = BaseComponent.create({
   __init__: function(data) {
 
     BaseComponent.__init__.call(this, data);
+
+    this.model.on("update", function(data) {
+
+      switch(data.accessor) {
+        case "state":
+          this._updateState(data.value);
+          break;
+        case "some other shit":
+          break;
+        default:
+      }
+
+    }.bind(this));
 
   },
 
@@ -75,6 +92,13 @@ module.exports = BaseComponent.create({
     e.preventDefault();
 
     this.model.activateNextPattern(e.boundTarget.getAttribute("data-id"));
+
+  },
+
+  _updateState: function(state) {
+
+
+    this.node.className = "pattern " + state;
 
   }
 

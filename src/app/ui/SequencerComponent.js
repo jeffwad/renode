@@ -55,10 +55,12 @@ module.exports = BaseComponent.create({
     @todo         move this to an external file
   */
   html: "<div class=\"sequencer\" data-id=\"\">" +
-          "<header>" +
-            "<h1 data-title=\"\"></h1>" +
-            "<h2 data-bpm=\"\"></h2>" +
-          "</header>" +
+          "<div class=\"info\" data-role=\"info\">" +
+            "<header>" +
+              "<h1 data-title=\"\"></h1>" +
+              "<h2 data-bpm=\"\"></h2><h2>bpm</h2>" +
+            "</header>" +
+          "</div>" +
           "<div data-role=\"track\"></div>" +
           "<div data-role=\"control\">" +
             "<a data-event=\"sequencer:control\" data-control=\"play\">play</a>" +
