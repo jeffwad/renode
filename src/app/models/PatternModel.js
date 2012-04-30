@@ -81,17 +81,23 @@ module.exports = BaseModel.create({
 
 
   pending: function() {
+
     this.state = this.PENDING;
+
   },
 
 
   playing: function() {
+
     this.state = this.PLAYING;
+
   },
 
 
   stopped: function() {
+
     this.state = this.STOPPED;
+
   },
 
 

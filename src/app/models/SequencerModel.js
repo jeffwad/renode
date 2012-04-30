@@ -59,7 +59,7 @@ module.exports = BaseModel.create({
   /**
     @description  synchronisation api
   */
-  syncApi: ["play", "stop"],
+  syncApi: ["play", "stop", "playStep"],
 
 
   /**
@@ -96,10 +96,19 @@ module.exports = BaseModel.create({
       return;
     }
     this.playing = true;
-    this._timer = setInterval(this._playStep.bind(this), this._barDuration() / this.steps);
+    this._timer = setInterval(this.playStep.bind(this), this._barDuration() / this.steps);
 
   },
 
+
+  /**
+    @description  plays all the notes from each track on each step
+  */
+  playStep: function() {
+
+    forEach(this.tracks.items(), this._playTrack, this);
+
+  },
 
 
   /**
@@ -138,16 +147,6 @@ module.exports = BaseModel.create({
 
     this.midi.output.sendMessage([track.midiOn, note.key, note.velocity]);
     setTimeout(this._stopNote.bind(this, track, note), note.duration);
-
-  },
-
-
-  /**
-    @description  plays all the notes from each track on each step
-  */
-  _playStep: function() {
-
-    forEach(this.tracks.items(), this._playTrack, this);
 
   },
 

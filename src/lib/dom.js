@@ -6,7 +6,7 @@
 */
 //"use strict";
 
-var getRegEx, Observer;
+var getRegEx, Handler;
 
 
 getRegEx = (function() {
@@ -27,7 +27,7 @@ getRegEx = (function() {
 
 
 
-Observer = {
+Handler = {
 
   __init__: function(obj, type, func) {
 
@@ -59,7 +59,7 @@ Object.defineProperties(HTMLElement.prototype, {
 
     value: function() {
 
-      var type = arguments[0], func = arguments[1], event, listener, observer;
+      var type = arguments[0], func = arguments[1], event, listener, handler;
       if (arguments.length === 3) {
         event = arguments[1];
         listener = arguments[2];
@@ -78,9 +78,9 @@ Object.defineProperties(HTMLElement.prototype, {
 
       }
 
-      observer = Observer.spawn(this, type, func);
-      observer.start();
-      return observer;
+      handler = Handler.spawn(this, type, func);
+      handler.start();
+      return handler;
     }
 
   },
@@ -134,7 +134,7 @@ Object.defineProperties(HTMLElement.prototype, {
 
     value: function(c) {
       var reClass = getRegEx("^(.*?)" + c + "(.*)", "i");
-      this.className = trim(this.className.replace(reClass,"$1$2")).replace('  ', ' ');
+      this.className = this.className.replace(reClass,"$1$2").trim().replace('  ', ' ');
       return this;
     }
 
@@ -144,7 +144,7 @@ Object.defineProperties(HTMLElement.prototype, {
   getStyle: {
 
     value: function(prop) {
-      return document.defaultView.getComputedStyle(this , "").getPropertyValue(camelCase(prop));
+      return document.defaultView.getComputedStyle(this , "").getPropertyValue(prop.camelize(true));
     }
 
   },
