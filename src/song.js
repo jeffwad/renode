@@ -33,7 +33,7 @@ module.exports = {
           "steps"    : {
             0: {
                 "notes": [
-                  {"key": 36, "velocity": 127, "duration": 120}
+                  {"key": 36, "velocity": 127, "duration": 1000}
                 ]
             },
             32: {

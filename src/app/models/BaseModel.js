@@ -61,8 +61,6 @@ module.exports = Base.create({
 
     this[methodName] = function() {
 
-      console.log("/master/" + this.id + "/" + methodName);
-
       this.sync.emit("/sync", {
         id        : this.id,
         methodName: methodName,

@@ -65,19 +65,17 @@ io.sockets.on("connection", function (socket) {
 
   socket.on("/sync", function(data) {
 
-    console.log("/slave/" + data.id + "/" + data.methodName);
-
     var object = registry.get(data.id);
     object[data.methodName].sync.apply(object, data.args);
 
     socket.broadcast.emit("/sync", data);
+
   });
 
   sync.on("/sync", function(data) {
 
-    console.log("/master/" + data.id + "/" + data.methodName);
-
     socket.broadcast.emit("/sync", data);
+
   });
 
 

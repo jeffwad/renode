@@ -35,8 +35,6 @@ socket.on("/connection/initialised", function (data) {
 
 socket.on("/sync", function(data) {
 
-  console.log("/slave/" + data.id + "/" + data.methodName);
-
   var object = registry.get(data.id);
   object[data.methodName].sync.apply(object, data.args);
 
