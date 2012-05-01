@@ -48,7 +48,7 @@ Base = EventMachine.create({
       this._initRelationships();
       this._initServices();
       this._updateAccessors(data);
-      this._createChildEntities(data);
+      this._createRelatedEntities(data);
 
 
       //  if the incoming data has no id, generate one, and add it to the data object
@@ -76,7 +76,7 @@ Base = EventMachine.create({
 
       set: function(value) {
 
-        if (definition.type) {
+        if (typeof value !== "undefined" && definition.type) {
           if (typeof value !== definition.type) {
             if (!definition.type.isPrototypeOf(value)) {
               throw Error.spawn("accessor (" + name + ") does not accept data: " + value);
@@ -106,9 +106,9 @@ Base = EventMachine.create({
   /**
     @description  to be implemented up the prototype chain
   */
-  _createChild: function() {
+  _createEntities: function() {
 
-    throw Error.spawn("Base#_createChild: to be implemented up the prototype chain");
+    throw Error.spawn("Base#_createEntities: to be implemented up the prototype chain");
 
   },
 
@@ -116,8 +116,9 @@ Base = EventMachine.create({
 
   /**
     @description  create child entities
+    @param        {object} data
   */
-  _createChildEntities: function(data) {
+  _createRelatedEntities: function(data) {
 
     forEach(["hasMany", "hasOne"], function(relationship){
 
@@ -125,7 +126,7 @@ Base = EventMachine.create({
 
       forEach(this[relationship], function(relation, name) {
 
-        this._createChild(name, data);
+        this._createEntities(name, data);
 
       }, this);
 
@@ -137,7 +138,7 @@ Base = EventMachine.create({
 
   /**
     @description  sets up the accessors on the model
-                  recursing through all the inherited models
+                  recurses up the prototype chain
   */
   _initAccessors: function() {
 
@@ -177,11 +178,96 @@ Base = EventMachine.create({
   },
 
 
+  /**
+    @description  sets up the hasMany relationships on the model,
+    @param        {object} object
+  */
+  _initHasMany: function(object) {
+
+    forEach(object.hasMany, function(relation, name) {
+
+      var capitalName = name.singularize().capitalize();
+
+      if (!this.hasOwnProperty(name)) {
+
+        //  create a non-enumerable accessor
+        this._createAccessor(name, {
+          'defaultValue': Collection.spawn(relation),
+          'type'        : Collection
+        });
+
+        //  create the factory methods
+        Object.defineProperty(this, "create" + capitalName, {
+
+          value: function(data) {
+
+            var relatedModel,
+                factory = this["_" + name + "Factory"];
+
+            if (factory && typeof factory.create === "function") {
+              relatedModel = factory.create(data);
+            }
+            else {
+              relatedModel = relation.spawn(data);
+            }
+
+            this[name].add(relatedModel);
+
+            return relatedModel;
+
+          },
+          enumerable: false
+
+        });
+
+        Object.defineProperty(this, "remove" + capitalName, {
+
+          value: function(model) {
+
+            this[name].remove(model);
+
+          },
+          enumerable: false
+
+        });
+
+        Object.defineProperty(this, "remove" + capitalName + "ByIndex", {
+
+          value: function(index) {
+
+            var collection = this[name];
+
+            collection.remove(collection.getByIndex(index));
+
+          },
+          enumerable: false
+
+        });
+
+        Object.defineProperty(this, "remove" + capitalName + "ById", {
+
+          value: function(id) {
+
+            var collection = this[name];
+
+            collection.remove(collection.getById(id));
+
+          },
+          enumerable: false
+
+        });
+
+
+      }
+
+    }, this);
+
+  },
+
 
   /**
-    @description  sets up the accessor hasMany relationships on the model,
-                  recursing through all the inherited models
-    @param        {object || undefined} object
+    @description  sets up the relationship accessors on the model,
+                  recurses up the prototype chain
   */
   _initRelationships: function() {
 
@@ -189,91 +275,18 @@ Base = EventMachine.create({
 
     while (object) {
 
-      if (object.hasOwnProperty('hasMany')) {
+      if (object.hasOwnProperty("hasMany")) {
 
-        forEach(object.hasMany, function(relation, name) {
-
-          var capitalName = name.singularize().capitalize();
-
-          if (!this.hasOwnProperty(name)) {
-
-            //  create a non-enumerable accessor
-            this._createAccessor(name, {
-              'defaultValue': Collection.spawn(relation),
-              'type'        : Collection
-            });
-
-            //  create the factory methods
-            Object.defineProperty(this, "create" + capitalName, {
-
-              value: function(data) {
-
-                var relatedModel,
-                    factory = this["_" + name + "Factory"];
-
-                if (factory && typeof factory.create === "function") {
-                  relatedModel = factory.create(data);
-                }
-                else {
-                  relatedModel = relation.spawn(data);
-                }
-
-                this[name].add(relatedModel);
-
-                return relatedModel;
-
-              },
-              enumerable: false
-
-            });
-
-            Object.defineProperty(this, "remove" + capitalName, {
-
-              value: function(model) {
-
-                this[name].remove(model);
-
-              },
-              enumerable: false
-
-            });
-
-            Object.defineProperty(this, "remove" + capitalName + "ByIndex", {
-
-              value: function(index) {
-
-                var collection = this[name];
-
-                collection.remove(collection.getByIndex(index));
-
-              },
-              enumerable: false
-
-            });
-
-            Object.defineProperty(this, "remove" + capitalName + "ById", {
-
-              value: function(id) {
-
-                var collection = this[name];
-
-                collection.remove(collection.getById(id));
-
-              },
-              enumerable: false
-
-            });
-
-
-          }
-
-        }, this);
-
+        this._initHasMany(object);
 
       }
 
-      //  get the prototype and test to see if there is an accessor
-      //  property anywhere on the prototype
+      if (object.hasOwnProperty("hasOne")) {
+
+        this._initHasOne(object);
+
+      }
+
       object = Object.getPrototypeOf(object);
 
     }
@@ -292,7 +305,7 @@ Base = EventMachine.create({
 
     while (object) {
 
-      if (object.hasOwnProperty('services')) {
+      if (object.hasOwnProperty("services")) {
 
         forEach(object.services, function(serviceName) {
 

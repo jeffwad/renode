@@ -114,9 +114,9 @@ module.exports = BaseModel.create({
   //  private
 
   /**
-    @description  overwrite the Base#_createChildEntities
+    @description  overwrite the Base#_createEntities
   */
-  _createChildEntities: function(data) {
+  _createEntities: function(name, data) {
 
     forEach(range(0, this.stepCount), function(step) {
 

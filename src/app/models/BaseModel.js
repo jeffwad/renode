@@ -37,7 +37,7 @@ module.exports = Base.create({
   //  private
 
 
-  _createChild: function(name, data) {
+  _createEntities: function(name, data) {
 
     var factoryMethodName = "create" + name.singularize().capitalize();
 
