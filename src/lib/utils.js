@@ -28,3 +28,17 @@ exports.generateId = function () {
 
   return uuid.join('');
 };
+
+
+exports.forEachPrototype = function(func) {
+
+  var proto = this;
+
+  while (proto) {
+
+    func.call(this, proto);
+    proto = Object.getPrototypeOf(proto);
+
+  }
+
+};

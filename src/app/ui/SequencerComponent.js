@@ -15,6 +15,8 @@ var iter           = require("lib/iter"),
 
 module.exports = BaseComponent.create({
 
+  nam: "Seq",
+
   //  properties
 
   /**
@@ -34,8 +36,8 @@ module.exports = BaseComponent.create({
   */
   events: {
 
-    "sequencer:control" : "_control",
-    "track:create": "_createTrack"
+    "sequencer:control": "_control",
+    "track:create"     : "_createTrack"
 
   },
 
@@ -48,6 +50,13 @@ module.exports = BaseComponent.create({
     tracks: TrackComponent
 
   },
+
+
+  // hasOne: {
+
+  //   editor: EditorComponent
+
+  // },
 
 
   /**

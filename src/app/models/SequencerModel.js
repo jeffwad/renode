@@ -59,7 +59,7 @@ module.exports = BaseModel.create({
   /**
     @description  synchronisation api
   */
-  syncApi: ["play", "stop", "playStep"],
+  syncApi: ["play", "stop"],
 
 
   /**
