@@ -79,11 +79,9 @@ function exhaust(object, func){
         }
       }
       else {
-        keys = Object.keys(object);
-        for (i = 0, l = keys.length; i < l; i++) {
-          key = keys[i];
+        Object.keys(object).forEach(function(key) {
           func(object[key], key);
-        }
+        });
       }
     }
   }
@@ -297,8 +295,8 @@ function imap(iterable, func, scope){
   return {
 
     next: function () {
-
-      return func.apply(null, iterable.next());
+      var it = iterable.next();
+      return [func.apply(scope || null, it[0]), it[1]];
 
     }
 

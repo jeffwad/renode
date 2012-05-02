@@ -19,7 +19,6 @@ var EventMachine = require("lib/EventMachine"),
 
 Base = EventMachine.create({
 
-
   /**
     @description  accessors
   */
@@ -120,20 +119,29 @@ Base = EventMachine.create({
   */
   _createRelatedEntities: function(data) {
 
-    forEach(["hasMany", "hasOne"], function(relationship){
+    var object = this;
 
-      if(typeof this[relationship] === "undefined") return;
+    while (object) {
 
-      forEach(this[relationship], function(relation, name) {
+      forEach(["hasMany", "hasOne"], function(relationship){
 
-        this._createEntities(name, data);
+        if (object.hasOwnProperty(relationship)) {
+
+          forEach(object[relationship], function(relation, name) {
+
+            this._createEntities(name, data);
+
+          }, this);
+
+        }
 
       }, this);
 
-    }, this);
+      object = Object.getPrototypeOf(object);
+
+    }
 
   },
-
 
 
   /**
@@ -153,7 +161,7 @@ Base = EventMachine.create({
           if (!this.hasOwnProperty(name)) {
 
             //  set the accessor definition
-            Object.defineProperty(this, '__' + name, {
+            Object.defineProperty(this, "__" + name + "__", {
 
               value: accessor,
               enumerable: false
@@ -169,8 +177,6 @@ Base = EventMachine.create({
 
       }
 
-      //  get the prototype and test to see if there is an accessor
-      //  property anywhere on the prototype
       object = Object.getPrototypeOf(object);
 
     }
@@ -266,6 +272,53 @@ Base = EventMachine.create({
 
 
   /**
+    @description  sets up the hasOne relationships on the model,
+    @param        {object} object
+  */
+  _initHasOne: function(object) {
+
+    forEach(object.hasOne, function(relation, name) {
+
+      var capitalName = name.singularize().capitalize();
+
+      if (!this.hasOwnProperty(name)) {
+
+        //  create a non-enumerable accessor
+        this._createAccessor(name, {
+          'type': relation
+        });
+
+        //  create the factory methods
+        Object.defineProperty(this, "create" + capitalName, {
+
+          value: function(data) {
+
+            var relatedModel,
+                factory = this["_" + name + "Factory"];
+
+            if (factory && typeof factory.create === "function") {
+              relatedModel = factory.create(data);
+            }
+            else {
+              relatedModel = relation.spawn(data);
+            }
+
+            this[name] = relatedModel;
+
+            return relatedModel;
+
+          },
+          enumerable: false
+
+        });
+
+      }
+
+    }, this);
+
+  },
+
+  /**
     @description  sets up the relationship accessors on the model,
                   recurses up the prototype chain
   */
@@ -352,5 +405,6 @@ Base = EventMachine.create({
   }
 
 });
+
 
 module.exports = Base;

@@ -127,6 +127,9 @@ module.exports = Base.create({
   */
   _addEventListeners: function() {
 
+    console.log(this, Object.keys(this), this.nam);
+    console.log(this, Object.getOwnPropertyNames(this), this.nam);
+
     forEach(this.events || {}, function(methodName, eventName) {
 
       if(typeof this[methodName] !== "function") {
@@ -147,7 +150,8 @@ module.exports = Base.create({
     if(this.model[name]) {
       forEach(this.model[name].items(), this[factoryMethodName], this);
       forEach(this[name].items(), this._registerChild, this);
-      // forEach(imap(this.model[name].items(), this[factoryMethodName].bind(this)), this._registerChild, this);
+      //  hhmm - something not right when using imap. shame. i like imap.
+      // forEach(imap(this.model[name].items(), this[factoryMethodName], this), this._registerChild, this);
     }
 
   },

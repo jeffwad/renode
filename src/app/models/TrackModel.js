@@ -55,8 +55,7 @@ module.exports = BaseModel.create({
   /**
     @description  synchronisation api
   */
-  //syncApi: ["activatePattern", "activateNextPattern", "switchPattern"],
-  syncApi: ["activatePattern", "activateNextPattern"],
+  syncApi: ["activatePattern", "activateNextPattern", "switchPattern"],
 
   /**
     @description  constructor
