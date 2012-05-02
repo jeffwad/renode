@@ -10,7 +10,7 @@ var Base    = require("lib/Base"),
     iter    = require("lib/iter"),
     utils   = require("lib/utils"),
     forEach = iter.forEach,
-    imap    = iter.imap;
+    chain   = iter.chain;
 
 
 module.exports = Base.create({
@@ -29,14 +29,8 @@ module.exports = Base.create({
 
   },
 
-  hasMany: {
-
-    children: Base
-
-  },
 
   //  public
-
 
   /***
     @description  constructor
@@ -62,15 +56,24 @@ module.exports = Base.create({
 
     this._addEventListeners();
 
-    if(this.children) {
 
-      forEach(this.children.items(), function(child) {
+    forEach(this["hasMany"], function(relation, name) {
+
+      forEach(this[name].items(), function(child) {
 
         child.addEventListeners();
 
       });
 
-    }
+    }, this);
+
+
+    forEach(this["hasOne"], function(relation, name) {
+
+      relation.addEventListeners();
+
+    });
+
   },
 
 
@@ -127,28 +130,49 @@ module.exports = Base.create({
   */
   _addEventListeners: function() {
 
-    forEach(this.events || {}, function(methodName, eventName) {
+    var object = this;
 
-      if(typeof this[methodName] !== "function") {
-        throw ReferenceError.spawn(methodName + ": is not a method on this object");
-      }
+    while (object) {
 
-      this.handlers[eventName] = this.node.on("click", eventName, this[methodName].bind(this));
+      forEach(Object.getOwnPropertyNames(object), function(property){
 
-    }, this);
+        //  eg: click>sequencer/control
+        if(/(\w+)>(\w+\/\w+)/.test(property)) {
+
+          this.handlers[RegExp.$2] = this.node.on(RegExp.$1, RegExp.$2, this[property].bind(this));
+        }
+
+      }, this);
+
+      object = Object.getPrototypeOf(object);
+
+    }
+
+
+
+    // forEach(this.events || {}, function(methodName, eventName) {
+
+    //   if(typeof this[methodName] !== "function") {
+    //     throw ReferenceError.spawn(methodName + ": is not a method on this object");
+    //   }
+
+    //   this.handlers[eventName] = this.node.on("click", eventName, this[methodName].bind(this));
+
+    // }, this);
 
   },
 
 
+  /**
+    @description  creates a set of related entites based on our models children
+    @param        {string} name
+  */
   _createEntities: function(name) {
 
     var factoryMethodName = "create" + name.singularize().capitalize();
 
     if(this.model[name]) {
       forEach(this.model[name].items(), this[factoryMethodName], this);
-      forEach(this[name].items(), this._registerChild, this);
-      //  hhmm - something not right when using imap. shame. i like imap.
-      // forEach(imap(this.model[name].items(), this[factoryMethodName], this), this._registerChild, this);
     }
 
   },
@@ -197,31 +221,30 @@ module.exports = Base.create({
 
 
   /**
-    @description  renders all registered children into the specified or default roles
+    @description  renders all related children into the specified or default roles
                   of it's node
   */
   _renderChildren: function() {
 
-    if (this.children) {
-      forEach(this.children.items(), this._renderChild, this);
-    }
+    forEach(this["hasMany"], function(relation, name) {
+
+      forEach(this[name].items(), this._renderChild, this);
+
+    }, this);
+
+    forEach(this["hasOne"], function(relation, name) {
+
+      this._renderChild(relation);
+
+    }, this);
 
   },
+
 
 
   /**
-    @description  registers a set of child ui objects with this object
-                  the objects in question are the related ui components created
-                  in _createComponents
+    @description  updates the html from the bound model
   */
-  _registerChild: function(child) {
-
-    this.children.add(child);
-    child.parent = this;
-
-  },
-
-
   _update: function() {
 
     this.node.setAttribute("data-id", this.model.id);

@@ -30,17 +30,6 @@ module.exports = BaseComponent.create({
 
 
   /**
-    @description  maps methods on this object to dom listening functions
-  */
-  events: {
-
-    "pattern:activate" : "_activateNextPattern",
-    "pattern:create"   : "_createPattern"
-
-  },
-
-
-  /**
     @description  relationships
   */
   hasMany: {
@@ -93,10 +82,12 @@ module.exports = BaseComponent.create({
   //  private
 
 
+  //  controller methods
+
   /*
     @description  tells a track to cue up the next pattern
   */
-  _activateNextPattern: function(e) {
+  "click>pattern/activate": function(e) {
 
     e.preventDefault();
 
@@ -104,7 +95,7 @@ module.exports = BaseComponent.create({
 
   },
 
-  _createPattern: function() {
+  "click>pattern/create": function() {
 
   }
 

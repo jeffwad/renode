@@ -4,7 +4,10 @@
   @description  utils
 
 */
-var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+var iter         = require("lib/iter"),
+    reduce       = iter.reduce,
+    chain        = iter.chain,
+    chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
 
 /**
   @description  generates an id
@@ -27,4 +30,24 @@ exports.generateId = function () {
   }
 
   return uuid.join('');
+};
+
+
+exports.merge = function(object, mixin) {
+  return reduce({}, chain([object || {}, mixin || {}]), function(ret, value, key) {
+    if(!ret.hasOwnProperty(key)) {
+      ret[key] = value;
+    }
+    return ret;
+  });
+};
+
+
+exports.concat = function(array, mixin) {
+  return reduce([], chain([array || [], mixin || []]), function(ret, value, key) {
+    if(ret.indexOf(value) === -1) {
+      ret.push(value);
+    }
+    return ret;
+  });
 };

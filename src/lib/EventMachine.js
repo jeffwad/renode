@@ -100,6 +100,7 @@ module.exports = EventEmitter.create({
 
   },
 
+
   //  private
 
   /**
@@ -107,7 +108,7 @@ module.exports = EventEmitter.create({
   */
   _initListeners: function() {
 
-    forEach(this.handlers, this.subscribers || {}, function(methodName, event) {
+    forEach(this.subscribers || {}, function(methodName, event) {
 
       if(typeof this[methodName] !== "function") {
         throw ReferenceError.spawn(methodName + ": is not a method on this object");

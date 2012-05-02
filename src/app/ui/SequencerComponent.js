@@ -15,7 +15,6 @@ var iter           = require("lib/iter"),
 
 module.exports = BaseComponent.create({
 
-  nam: "Seq",
 
   //  properties
 
@@ -27,17 +26,6 @@ module.exports = BaseComponent.create({
     model: {
       type: SequencerModel
     }
-
-  },
-
-
-  /**
-    @description  maps methods on this object to dom listening functions
-  */
-  events: {
-
-    "sequencer:control": "_control",
-    "track:create"     : "_createTrack"
 
   },
 
@@ -72,8 +60,8 @@ module.exports = BaseComponent.create({
           "</div>" +
           "<div data-role=\"track\"></div>" +
           "<div data-role=\"control\">" +
-            "<a data-event=\"sequencer:control\" data-control=\"play\">play</a>" +
-            "<a data-event=\"sequencer:control\" data-control=\"stop\">stop</a>" +
+            "<a data-event=\"sequencer/control\" data-control=\"play\">play</a>" +
+            "<a data-event=\"sequencer/control\" data-control=\"stop\">stop</a>" +
           "</div>" +
         "</div>",
 
@@ -82,12 +70,6 @@ module.exports = BaseComponent.create({
     @description  role
   */
   role: "sequencer",
-
-
-  /**
-    @description  services
-  */
-  services: [],
 
 
   //  public
@@ -109,11 +91,14 @@ module.exports = BaseComponent.create({
   //  private
 
 
+  //  controller methods
+
+
   /*
     @description  emits a control event
                   data-action="play"
   */
-  _control: function(e) {
+  "click>sequencer/control": function(e) {
 
     var control = e.target.getAttribute("data-control");
 
@@ -127,7 +112,7 @@ module.exports = BaseComponent.create({
   },
 
 
-  _createTrack: function(e) {
+  "click>track/create": function(e) {
 
     this.model.createTrack({
       id: utils.generateId()

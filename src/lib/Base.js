@@ -15,28 +15,10 @@ var EventMachine = require("lib/EventMachine"),
     Collection   = require("lib/Collection"),
     service      = require("lib/service"),
     forEach      = iter.forEach,
-    reduce       = iter.reduce,
     chain        = iter.chain,
     Base;
 
 
-function merge(object, mixin) {
-  return reduce({}, chain([object || {}, mixin || {}]), function(ret, value, key) {
-    if(!ret.hasOwnProperty(key)) {
-      ret[key] = value;
-    }
-    return ret;
-  });
-}
-
-function concat(array, mixin) {
-  return reduce([], chain([array || [], mixin || []]), function(ret, value, key) {
-    if(ret.indexOf(value) === -1) {
-      ret.push(value);
-    }
-    return ret;
-  });
-}
 
 
 
@@ -65,17 +47,18 @@ Base = EventMachine.create({
     //  merge all the definition object declarations
     forEach(["accessors", "hasMany", "hasOne"], function(property) {
 
-      definition[property] = merge(definition[property], this[property]);
+      definition[property] = utils.merge(definition[property], this[property]);
 
     }, this);
 
     //  merge all the definition array declarations
     forEach(["services"], function(property) {
 
-      definition[property] = concat(definition[property], this[property]);
+      definition[property] = utils.concat(definition[property], this[property]);
 
     }, this);
 
+    //  create our base object
     base = EventMachine.create.call(this, definition);
 
     //  now we want to set up all the relationships factory methods on the prototype
@@ -92,10 +75,6 @@ Base = EventMachine.create({
   __init__: function(data) {
 
       EventMachine.__init__.call(this);
-
-      Object.defineProperty(this, "_data", {
-        value: {}
-      });
 
       this._initAccessors();
       this._initRelationships();
@@ -273,21 +252,16 @@ Base = EventMachine.create({
 
   /**
     @description  sets up the accessors on the model
-                  recurses up the prototype chain
   */
   _initAccessors: function() {
+
+    Object.defineProperty(this, "_data", {
+      value: {}
+    });
 
     forEach(this.accessors, function(accessor, name) {
 
       if (!this.hasOwnProperty(name)) {
-
-        //  set the accessor definition
-        Object.defineProperty(this, "__" + name + "__", {
-
-          value: accessor,
-          enumerable: false
-
-        });
 
         //  create an enumerable accessor
         this._createAccessor(name, accessor, true);
@@ -302,7 +276,6 @@ Base = EventMachine.create({
 
   /**
     @description  sets up the hasMany relationships on the model,
-    @param        {object} object
   */
   _initHasMany: function() {
 

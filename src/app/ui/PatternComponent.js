@@ -36,19 +36,13 @@ module.exports = BaseComponent.create({
     @description  template
     @todo         move this to an external file
   */
-  html: "<div class=\"pattern\" data-event=\"pattern:activate\" data-id=\"\">",
+  html: "<div class=\"pattern\" data-event=\"pattern/activate\" data-id=\"\">",
 
 
   /**
     @description  role
   */
   role: "pattern",
-
-
-  /**
-    @description  services
-  */
-  //services: [],
 
 
   //  public
@@ -84,19 +78,10 @@ module.exports = BaseComponent.create({
 
 
   /*
-    @description  tells a track to cue up the next pattern
-                  data-action="play"
+    @description  updates the state of the patterns
+    @param        {string} state
   */
-  _activateNextPattern: function(e) {
-
-    e.preventDefault();
-
-    this.model.activateNextPattern(e.boundTarget.getAttribute("data-id"));
-
-  },
-
   _updateState: function(state) {
-
 
     this.node.className = "pattern " + state;
 

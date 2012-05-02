@@ -37,6 +37,11 @@ module.exports = Base.create({
   //  private
 
 
+  /**
+    @description  creates a set of related entites based on our incoming data
+    @param        {string} name
+    @param        {data} data
+  */
   _createEntities: function(name, data) {
 
     var factoryMethodName = "create" + name.singularize().capitalize();
@@ -47,6 +52,10 @@ module.exports = Base.create({
 
   },
 
+
+  /**
+    @description  sets up the sync api accross the client and server
+  */
   _syncClientAndServer: function() {
 
     if(this.syncApi) {
@@ -55,6 +64,11 @@ module.exports = Base.create({
 
   },
 
+
+  /**
+    @description  sets up the sync api on a given method
+    @param        {string} methodName
+  */
   _syncMethod: function(methodName) {
 
     var method = this[methodName];
