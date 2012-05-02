@@ -60,6 +60,8 @@ Base = EventMachine.create({
   */
   create: function(definition) {
 
+    var base;
+
     //  merge all the definition object declarations
     forEach(["accessors", "hasMany", "hasOne"], function(property) {
 
@@ -74,7 +76,12 @@ Base = EventMachine.create({
 
     }, this);
 
-    return EventMachine.create.call(this, definition);
+    base = EventMachine.create.call(this, definition);
+
+    //  now we want to set up all the relationships factory methods on the prototype
+    base._createRelationships();
+
+    return base;
 
   },
 
@@ -161,34 +168,107 @@ Base = EventMachine.create({
 
 
   /**
+    @description  sets up the hasMany relationships on the model,
+    @param        {object} object
+  */
+  _createHasMany: function() {
+
+    forEach(this.hasMany, function(relation, name) {
+
+      var capitalName = name.singularize().capitalize();
+
+      //  create the factory methods
+      Object.defineProperty(this, "create" + capitalName, {
+
+        value: function(data) {
+
+          var relatedModel,
+              factory = this["_" + name + "Factory"];
+
+          if (factory && typeof factory.create === "function") {
+            relatedModel = factory.create(data);
+          }
+          else {
+            relatedModel = relation.spawn(data);
+          }
+
+          this[name].add(relatedModel);
+
+          return relatedModel;
+
+        },
+        enumerable: false
+
+      });
+
+      Object.defineProperty(this, "remove" + capitalName, {
+
+        value: function(model) {
+
+          this[name].remove(model);
+
+        },
+        enumerable: false
+
+      });
+
+      Object.defineProperty(this, "remove" + capitalName + "ByIndex", {
+
+        value: function(index) {
+
+          var collection = this[name];
+
+          collection.remove(collection.getByIndex(index));
+
+        },
+        enumerable: false
+
+      });
+
+      Object.defineProperty(this, "remove" + capitalName + "ById", {
+
+        value: function(id) {
+
+          var collection = this[name];
+
+          collection.remove(collection.getById(id));
+
+        },
+        enumerable: false
+
+      });
+
+    }, this);
+
+  },
+
+
+  /**
     @description  create child entities
     @param        {object} data
   */
   _createRelatedEntities: function(data) {
 
-    var object = this;
+    forEach(chain([this["hasMany"], this["hasOne"]]), function(relation, name) {
 
-    while (object) {
+      this._createEntities(name, data);
 
-      forEach(["hasMany", "hasOne"], function(relationship){
-
-        if (object.hasOwnProperty(relationship)) {
-
-          forEach(object[relationship], function(relation, name) {
-
-            this._createEntities(name, data);
-
-          }, this);
-
-        }
-
-      }, this);
-
-      object = Object.getPrototypeOf(object);
-
-    }
+    }, this);
 
   },
+
+
+
+  /**
+    @description  sets up the relationship accessors on the model,
+  */
+  _createRelationships: function() {
+
+    this._createHasMany();
+    //this._initHasOne();
+
+  },
+
 
 
   /**
@@ -219,6 +299,7 @@ Base = EventMachine.create({
   },
 
 
+
   /**
     @description  sets up the hasMany relationships on the model,
     @param        {object} object
@@ -236,68 +317,6 @@ Base = EventMachine.create({
           'defaultValue': Collection.spawn(relation),
           'type'        : Collection
         });
-
-        //  create the factory methods
-        Object.defineProperty(this, "create" + capitalName, {
-
-          value: function(data) {
-
-            var relatedModel,
-                factory = this["_" + name + "Factory"];
-
-            if (factory && typeof factory.create === "function") {
-              relatedModel = factory.create(data);
-            }
-            else {
-              relatedModel = relation.spawn(data);
-            }
-
-            this[name].add(relatedModel);
-
-            return relatedModel;
-
-          },
-          enumerable: false
-
-        });
-
-        Object.defineProperty(this, "remove" + capitalName, {
-
-          value: function(model) {
-
-            this[name].remove(model);
-
-          },
-          enumerable: false
-
-        });
-
-        Object.defineProperty(this, "remove" + capitalName + "ByIndex", {
-
-          value: function(index) {
-
-            var collection = this[name];
-
-            collection.remove(collection.getByIndex(index));
-
-          },
-          enumerable: false
-
-        });
-
-        Object.defineProperty(this, "remove" + capitalName + "ById", {
-
-          value: function(id) {
-
-            var collection = this[name];
-
-            collection.remove(collection.getById(id));
-
-          },
-          enumerable: false
-
-        });
-
 
       }
 
@@ -351,6 +370,7 @@ Base = EventMachine.create({
     }, this);
 
   },
+
 
   /**
     @description  sets up the relationship accessors on the model,
