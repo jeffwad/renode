@@ -127,9 +127,6 @@ module.exports = Base.create({
   */
   _addEventListeners: function() {
 
-    console.log(this, Object.keys(this), this.nam);
-    console.log(this, Object.getOwnPropertyNames(this), this.nam);
-
     forEach(this.events || {}, function(methodName, eventName) {
 
       if(typeof this[methodName] !== "function") {

@@ -15,7 +15,30 @@ var EventMachine = require("lib/EventMachine"),
     Collection   = require("lib/Collection"),
     service      = require("lib/service"),
     forEach      = iter.forEach,
+    reduce       = iter.reduce,
+    chain        = iter.chain,
     Base;
+
+
+function merge(object, mixin) {
+  return reduce({}, chain([object || {}, mixin || {}]), function(ret, value, key) {
+    if(!ret.hasOwnProperty(key)) {
+      ret[key] = value;
+    }
+    return ret;
+  });
+}
+
+function concat(array, mixin) {
+  return reduce([], chain([array || [], mixin || []]), function(ret, value, key) {
+    if(ret.indexOf(value) === -1) {
+      ret.push(value);
+    }
+    return ret;
+  });
+}
+
+
 
 Base = EventMachine.create({
 
@@ -30,10 +53,34 @@ Base = EventMachine.create({
   },
 
 
-  //  constructor
+  //  constructors
 
   /**
-    @description  constructor
+    @description  prototoype constructor
+  */
+  create: function(definition) {
+
+    //  merge all the definition object declarations
+    forEach(["accessors", "hasMany", "hasOne"], function(property) {
+
+      definition[property] = merge(definition[property], this[property]);
+
+    }, this);
+
+    //  merge all the definition array declarations
+    forEach(["services"], function(property) {
+
+      definition[property] = concat(definition[property], this[property]);
+
+    }, this);
+
+    return EventMachine.create.call(this, definition);
+
+  },
+
+
+  /**
+    @description  instance constructor
   */
   __init__: function(data) {
 
@@ -150,36 +197,24 @@ Base = EventMachine.create({
   */
   _initAccessors: function() {
 
-    var object = this;
+    forEach(this.accessors, function(accessor, name) {
 
-    while (object) {
+      if (!this.hasOwnProperty(name)) {
 
-      if (object.hasOwnProperty('accessors')) {
+        //  set the accessor definition
+        Object.defineProperty(this, "__" + name + "__", {
 
-        forEach(object.accessors, function(accessor, name) {
+          value: accessor,
+          enumerable: false
 
-          if (!this.hasOwnProperty(name)) {
+        });
 
-            //  set the accessor definition
-            Object.defineProperty(this, "__" + name + "__", {
-
-              value: accessor,
-              enumerable: false
-
-            });
-
-            //  create an enumerable accessor
-            this._createAccessor(name, accessor, true);
-
-          }
-
-        }, this);
+        //  create an enumerable accessor
+        this._createAccessor(name, accessor, true);
 
       }
 
-      object = Object.getPrototypeOf(object);
-
-    }
+    }, this);
 
   },
 
@@ -188,9 +223,9 @@ Base = EventMachine.create({
     @description  sets up the hasMany relationships on the model,
     @param        {object} object
   */
-  _initHasMany: function(object) {
+  _initHasMany: function() {
 
-    forEach(object.hasMany, function(relation, name) {
+    forEach(this.hasMany, function(relation, name) {
 
       var capitalName = name.singularize().capitalize();
 
@@ -273,11 +308,10 @@ Base = EventMachine.create({
 
   /**
     @description  sets up the hasOne relationships on the model,
-    @param        {object} object
   */
-  _initHasOne: function(object) {
+  _initHasOne: function() {
 
-    forEach(object.hasOne, function(relation, name) {
+    forEach(this.hasOne, function(relation, name) {
 
       var capitalName = name.singularize().capitalize();
 
@@ -320,30 +354,11 @@ Base = EventMachine.create({
 
   /**
     @description  sets up the relationship accessors on the model,
-                  recurses up the prototype chain
   */
   _initRelationships: function() {
 
-    var object = this;
-
-    while (object) {
-
-      if (object.hasOwnProperty("hasMany")) {
-
-        this._initHasMany(object);
-
-      }
-
-      if (object.hasOwnProperty("hasOne")) {
-
-        this._initHasOne(object);
-
-      }
-
-      object = Object.getPrototypeOf(object);
-
-    }
-
+    this._initHasMany();
+    //this._initHasOne();
 
   },
 
@@ -354,35 +369,21 @@ Base = EventMachine.create({
   */
   _initServices: function() {
 
-    var object = this;
+    forEach(this.services, function(serviceName) {
 
-    while (object) {
+      if (!this.hasOwnProperty(serviceName)) {
 
-      if (object.hasOwnProperty("services")) {
+        Object.defineProperty(this, serviceName, {
 
-        forEach(object.services, function(serviceName) {
-
-          if (!this.hasOwnProperty(serviceName)) {
-
-            Object.defineProperty(this, serviceName, {
-
-              get: function() {
-                return service.locate(serviceName);
-              }
-
-            });
-
+          get: function() {
+            return service.locate(serviceName);
           }
 
-        }, this);
+        });
 
       }
 
-      //  get the prototype and test to see if there is an accessor
-      //  property anywhere on the prototype
-      object = Object.getPrototypeOf(object);
-
-    }
+    }, this);
 
   },
 
