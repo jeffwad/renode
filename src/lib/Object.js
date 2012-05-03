@@ -25,7 +25,8 @@ Object.defineProperties(Object.prototype, {
       forEach(definition, function(property, name) {
 
         Object.defineProperty(object, name, {
-          value: property
+          value: property,
+          configurable: true
         });
 
       });

@@ -51,18 +51,14 @@ Base = EventMachine.create({
 
     }, this);
 
-    //  merge all the definition array declarations
-    forEach(["services"], function(property) {
-
-      definition[property] = utils.concat(definition[property], this[property]);
-
-    }, this);
+    //  merge all the services declarations
+    definition.services = utils.concat(definition.services, this.services);
 
     //  create our base object
     base = EventMachine.create.call(this, definition);
 
     //  now we want to set up all the relationships factory methods on the prototype
-    base._createRelationships();
+    base.createRelationships();
 
     return base;
 
@@ -91,6 +87,20 @@ Base = EventMachine.create({
         this.id = data.id = utils.generateId();
       }
   },
+
+
+  //  public
+
+  /**
+    @description  sets up the relationship accessors on the model,
+  */
+  createRelationships: function() {
+
+    this._createHasMany();
+    //this._initHasOne();
+
+  },
+
 
 
   //  private
@@ -236,17 +246,6 @@ Base = EventMachine.create({
 
   },
 
-
-
-  /**
-    @description  sets up the relationship accessors on the model,
-  */
-  _createRelationships: function() {
-
-    this._createHasMany();
-    //this._initHasOne();
-
-  },
 
 
 

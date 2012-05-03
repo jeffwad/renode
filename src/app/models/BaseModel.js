@@ -5,6 +5,7 @@
 
 */
 var Base     = require("lib/Base"),
+    utils    = require("lib/utils"),
     iter     = require("lib/iter"),
     toArray  = iter.toArray,
     forEach  = iter.forEach;
@@ -18,18 +19,51 @@ module.exports = Base.create({
   services: ["sync", "registry"],
 
 
-  //  constructor
+  //  constructors
 
   /**
-    @description  constructor
+    @description  prototype constructor
+  */
+  create: function(definition) {
+
+    var baseModel;
+
+    //  merge all the syncApi declarations
+    definition.syncApi = utils.concat(definition.syncApi, this.syncApi);
+
+    baseModel = Base.create.call(this, definition);
+
+    baseModel.syncClientAndServer();
+
+    return baseModel;
+
+  },
+
+
+
+  /**
+    @description  instance constructor
   */
   __init__: function(data) {
 
     Base.__init__.call(this, data);
 
-    this._syncClientAndServer();
-
     this.registry.add(this);
+
+  },
+
+
+  //  public
+
+
+  /**
+    @description  sets up the sync api accross the client and server
+  */
+  syncClientAndServer: function() {
+
+    if(this.syncApi) {
+      forEach(this.syncApi, this._syncMethod, this);
+    }
 
   },
 
@@ -53,17 +87,6 @@ module.exports = Base.create({
   },
 
 
-  /**
-    @description  sets up the sync api accross the client and server
-  */
-  _syncClientAndServer: function() {
-
-    if(this.syncApi) {
-      forEach(this.syncApi, this._syncMethod, this);
-    }
-
-  },
-
 
   /**
     @description  sets up the sync api on a given method
@@ -73,17 +96,20 @@ module.exports = Base.create({
 
     var method = this[methodName];
 
-    this[methodName] = function() {
+    Object.defineProperty(this, methodName, {
 
-      this.sync.emit("/sync", {
-        id        : this.id,
-        methodName: methodName,
-        args      : toArray(arguments)
-      });
+      value: function() {
 
-      return method.apply(this, arguments);
+        this.sync.emit("/sync", {
+          id        : this.id,
+          methodName: methodName,
+          args      : toArray(arguments)
+        });
 
-    };
+        return method.apply(this, arguments);
+      }
+
+    });
 
     //  attach the original method to the wrapped one to enable
     //  the sync api to access the original one

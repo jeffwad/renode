@@ -73,7 +73,7 @@ module.exports = {
             },
             16: {
                 "notes": [
-                  {"key": 46, "velocity": 80, "duration": 120}
+                  {"key": 47, "velocity": 80, "duration": 500}
                 ]
             },
             32: {
@@ -99,17 +99,18 @@ module.exports = {
             },
             80: {
                 "notes": [
-                  {"key": 46, "velocity": 80, "duration": 120}
+                  {"key": 47, "velocity": 80, "duration": 120}
                 ]
             },
             96: {
                 "notes": [
-                  {"key": 40, "velocity": 127, "duration": 120}
+                  {"key": 40, "velocity": 127, "duration": 120},
+                  {"key": 46, "velocity": 65, "duration": 120}
                 ]
             },
             112: {
                 "notes": [
-                  {"key": 46, "velocity": 80, "duration": 120}
+                  {"key": 47, "velocity": 80, "duration": 120}
                 ]
             }
           }

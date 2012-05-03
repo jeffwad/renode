@@ -6,9 +6,10 @@
 */
 var BaseModel  = require("app/models/BaseModel"),
     TrackModel = require("app/models/TrackModel"),
-    forEach    = require("lib/iter").forEach;
+    forEach    = require("lib/iter").forEach,
+    Sequencer;
 
-module.exports = BaseModel.create({
+Sequencer = BaseModel.create({
 
   //  properties
 
@@ -176,3 +177,5 @@ module.exports = BaseModel.create({
   }
 
 });
+
+module.exports = Sequencer;
