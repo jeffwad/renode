@@ -9,6 +9,7 @@
 var iter          = require("lib/iter"),
     PatternModel  = require("app/models/PatternModel"),
     BaseComponent = require("app/ui/BaseComponent"),
+    template      = require("app/ui/templates/pattern.html"),
     forEach       = iter.forEach;
 
 
@@ -34,9 +35,8 @@ module.exports = BaseComponent.create({
 
   /**
     @description  template
-    @todo         move this to an external file
   */
-  html: "<div class=\"pattern\" data-event=\"/pattern/activate\" data-id=\"\">",
+  html: template,
 
 
 

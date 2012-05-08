@@ -73,14 +73,23 @@ function copyFile(filename, callback) {
     //  write the file
     filename = filename.replace("/src/", "/htdocs/");
     console.log("copy: ", filename);
-    fs.writeFile(filename, data, "utf8", function(err) {
-      if(err) {
-        console.error(err);
-        return;
-      }
-      if(callback) {
-        callback(filename);
-      }
+
+    //  create the folder if it doesn't exist
+    var foldername = filename.split("/");
+    foldername.pop();
+    foldername = foldername.join("/");
+
+    runCmds(["mkdir -p " + foldername], function() {
+
+      fs.writeFile(filename, data, "utf8", function(err) {
+        if(err) {
+          console.error(err);
+          return;
+        }
+        if(callback) {
+          callback(filename);
+        }
+      });
     });
   });
 }
@@ -196,7 +205,15 @@ function createTransportFile(filename, callback) {
 
             module = module.replace(/"/g, '');
 
-            if(/^\//.test(module)) {
+            if(/.html$/.test(module)) {
+
+              filename = __dirname + "/src" + module;
+
+              copyFile(filename);
+
+            }
+
+            else if(/^\//.test(module)) {
 
               filename = __dirname + "/src" + module + ".js";
 

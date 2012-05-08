@@ -10,6 +10,7 @@ var iter             = require("lib/iter"),
     TrackModel       = require("app/models/TrackModel"),
     BaseComponent    = require("app/ui/BaseComponent"),
     PatternComponent = require("app/ui/PatternComponent"),
+    template         = require("app/ui/templates/track.html"),
     forEach          = iter.forEach;
 
 
@@ -41,16 +42,8 @@ module.exports = BaseComponent.create({
 
   /**
     @description  template
-    @todo         move this to an external file
   */
-  html: "<div class=\"track\"  data-id=\"\">" +
-          "<header>" +
-            "<h1 data-title=\"\"></h1>" +
-          "</header>" +
-          "<div data-has-many=\"patterns\"></div>" +
-        "</div>",
-
-
+  html: template,
 
 
   //  public

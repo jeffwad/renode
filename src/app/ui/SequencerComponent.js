@@ -10,6 +10,7 @@ var iter           = require("lib/iter"),
     SequencerModel = require("app/models/SequencerModel"),
     BaseComponent  = require("app/ui/BaseComponent"),
     TrackComponent = require("app/ui/TrackComponent"),
+    template       = require("app/ui/templates/sequencer.html"),
     forEach        = iter.forEach;
 
 
@@ -49,22 +50,9 @@ module.exports = BaseComponent.create({
 
   /**
     @description  template
-    @todo         move this to an external file
   */
-  html: "<div class=\"sequencer\" data-id=\"\">" +
-          "<div class=\"info\" data-role=\"info\">" +
-            "<header>" +
-              "<h1 data-title=\"\"></h1>" +
-              "<h2 data-bpm=\"\"></h2><h2>bpm</h2>" +
-            "</header>" +
-          "</div>" +
-          "<div data-has-many=\"tracks\"></div>" +
-          "<div data-has-many=\"controls\">" +
-            "<a data-event=\"/sequencer/control\" data-control=\"play\">play</a>" +
-            "<a data-event=\"/sequencer/control\" data-control=\"stop\">stop</a>" +
-          "</div>" +
-        "</div>",
 
+  html: template,
 
 
   //  public
@@ -87,7 +75,6 @@ module.exports = BaseComponent.create({
 
 
   //  controller methods
-
 
   /*
     @description  emits a control event

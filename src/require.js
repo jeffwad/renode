@@ -353,15 +353,10 @@
       loading[fileName] = true;
       getTemplate(fileName, function(data) {
 
-        var moduleName, module;
-
         register(fileName, data);
         delete loading[fileName];
 
-        for(moduleName in uninitialised) {
-          module = uninitialised[moduleName];
-          define(moduleName, module.dependencies, module.def);
-        }
+        em.emit("/module/initialised" + fileName, data);
 
       });
 
