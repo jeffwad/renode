@@ -58,18 +58,13 @@ module.exports = BaseComponent.create({
               "<h2 data-bpm=\"\"></h2><h2>bpm</h2>" +
             "</header>" +
           "</div>" +
-          "<div data-role=\"track\"></div>" +
-          "<div data-role=\"control\">" +
+          "<div data-has-many=\"tracks\"></div>" +
+          "<div data-has-many=\"controls\">" +
             "<a data-event=\"/sequencer/control\" data-control=\"play\">play</a>" +
             "<a data-event=\"/sequencer/control\" data-control=\"stop\">stop</a>" +
           "</div>" +
         "</div>",
 
-
-  /**
-    @description  role
-  */
-  role: "sequencer",
 
 
   //  public

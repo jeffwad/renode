@@ -39,13 +39,6 @@ module.exports = BaseComponent.create({
   },
 
 
-
-  /**
-    @description  role
-  */
-  role: "track",
-
-
   /**
     @description  template
     @todo         move this to an external file
@@ -54,14 +47,11 @@ module.exports = BaseComponent.create({
           "<header>" +
             "<h1 data-title=\"\"></h1>" +
           "</header>" +
-          "<div data-role=\"pattern\"></div>" +
+          "<div data-has-many=\"patterns\"></div>" +
         "</div>",
 
 
-  /**
-    @description  services
-  */
-  services: [],
+
 
   //  public
 

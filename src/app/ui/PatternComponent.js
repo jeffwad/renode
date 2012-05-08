@@ -39,11 +39,6 @@ module.exports = BaseComponent.create({
   html: "<div class=\"pattern\" data-event=\"/pattern/activate\" data-id=\"\">",
 
 
-  /**
-    @description  role
-  */
-  role: "pattern",
-
 
   //  public
 

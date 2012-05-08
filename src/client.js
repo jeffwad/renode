@@ -20,9 +20,9 @@ var registry           = require("lib/registry"),
 
 
 
-//socket = io.connect("http://localhost");
+socket = io.connect("http://localhost");
 //socket = io.connect('http://192.168.1.82');
-socket = io.connect('http://192.168.115.89');
+//socket = io.connect('http://192.168.115.89');
 sync = EventMachine.spawn();
 
 socket.on("/connection/initialised", function (data) {

@@ -186,19 +186,20 @@ module.exports = Base.create({
                   of it's node
     @param        {object} child
   */
-  _renderChild: function(child) {
+  _renderChild: function(type, name, child) {
 
-      var container,
-          role = child.role || "default";
+      var container;
 
-      if (this.node.getAttribute("data-role") === role) {
+      type = "data-" + type.underscore().dasherize();
+
+      if (this.node.getAttribute(type) === name) {
         container = this.node;
       }
       else {
-        container = this.node.querySelector('*[data-role="' + role + '"]');
+        container = this.node.querySelector('*[' + type + '="' + name + '"]');
       }
       if (typeof container === "undefined") {
-        throw TypeError.spawn("ui/BaseComponent#render role (" + role + ") does not exist");
+        throw TypeError.spawn("ui/BaseComponent#render " + type + " (" + name + ") does not exist");
       }
 
       child.render();
@@ -216,18 +217,13 @@ module.exports = Base.create({
 
     forEach(this["hasMany"], function(relation, name) {
 
-      forEach(this[name].items(), this._renderChild, this);
+      forEach(this[name].items(), this._renderChild.bind(this, "hasMany", name));
 
     }, this);
 
-    forEach(this["hasOne"], function(relation, name) {
-
-      this._renderChild(relation);
-
-    }, this);
+    forEach(this["hasOne"], this._renderChild.bind(this, "hasOne"));
 
   },
-
 
 
   /**
