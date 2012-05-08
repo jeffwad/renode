@@ -136,8 +136,8 @@ module.exports = Base.create({
 
       forEach(Object.getOwnPropertyNames(object), function(property){
 
-        //  eg: click>sequencer/control
-        if(/(\w+)>(\w+\/\w+)/.test(property)) {
+        //  eg: click>/sequencer/control
+        if(/(\w+)>(\/\w+\/\w+)/.test(property)) {
 
           this.handlers[RegExp.$2] = this.node.on(RegExp.$1, RegExp.$2, this[property].bind(this));
         }
@@ -147,18 +147,6 @@ module.exports = Base.create({
       object = Object.getPrototypeOf(object);
 
     }
-
-
-
-    // forEach(this.events || {}, function(methodName, eventName) {
-
-    //   if(typeof this[methodName] !== "function") {
-    //     throw ReferenceError.spawn(methodName + ": is not a method on this object");
-    //   }
-
-    //   this.handlers[eventName] = this.node.on("click", eventName, this[methodName].bind(this));
-
-    // }, this);
 
   },
 

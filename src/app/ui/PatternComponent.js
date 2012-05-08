@@ -36,7 +36,7 @@ module.exports = BaseComponent.create({
     @description  template
     @todo         move this to an external file
   */
-  html: "<div class=\"pattern\" data-event=\"pattern/activate\" data-id=\"\">",
+  html: "<div class=\"pattern\" data-event=\"/pattern/activate\" data-id=\"\">",
 
 
   /**

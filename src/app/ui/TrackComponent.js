@@ -87,7 +87,7 @@ module.exports = BaseComponent.create({
   /*
     @description  tells a track to cue up the next pattern
   */
-  "click>pattern/activate": function(e) {
+  "click>/pattern/activate": function(e) {
 
     e.preventDefault();
 
@@ -95,7 +95,7 @@ module.exports = BaseComponent.create({
 
   },
 
-  "click>pattern/create": function() {
+  "click>/pattern/create": function() {
 
   }
 

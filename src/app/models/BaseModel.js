@@ -61,9 +61,7 @@ module.exports = Base.create({
   */
   syncClientAndServer: function() {
 
-    if(this.syncApi) {
-      forEach(this.syncApi, this._syncMethod, this);
-    }
+    forEach(this.syncApi, this._syncMethod, this);
 
   },
 
@@ -111,8 +109,8 @@ module.exports = Base.create({
 
     });
 
-    //  attach the original method to the wrapped one to enable
-    //  the sync api to access the original one
+    //  attach the original method to the wrapped one to grant
+    //  the sync api access
     this[methodName].sync = method;
 
   }

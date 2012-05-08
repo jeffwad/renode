@@ -60,8 +60,8 @@ module.exports = BaseComponent.create({
           "</div>" +
           "<div data-role=\"track\"></div>" +
           "<div data-role=\"control\">" +
-            "<a data-event=\"sequencer/control\" data-control=\"play\">play</a>" +
-            "<a data-event=\"sequencer/control\" data-control=\"stop\">stop</a>" +
+            "<a data-event=\"/sequencer/control\" data-control=\"play\">play</a>" +
+            "<a data-event=\"/sequencer/control\" data-control=\"stop\">stop</a>" +
           "</div>" +
         "</div>",
 
@@ -98,7 +98,7 @@ module.exports = BaseComponent.create({
     @description  emits a control event
                   data-action="play"
   */
-  "click>sequencer/control": function(e) {
+  "click>/sequencer/control": function(e) {
 
     var control = e.target.getAttribute("data-control");
 
@@ -107,12 +107,13 @@ module.exports = BaseComponent.create({
     if(typeof this.model[control] !== "function") {
       throw Error.spawn("method (" + control + ") does not exist on this.model");
     }
+
     this.model[control]();
 
   },
 
 
-  "click>track/create": function(e) {
+  "click>/track/create": function(e) {
 
     this.model.createTrack({
       id: utils.generateId()
