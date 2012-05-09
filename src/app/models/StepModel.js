@@ -4,7 +4,7 @@
   @description  A step containing multiple notes
 
 */
-var BaseModel = require("app/models/BaseModel"),
+var BaseModel = require("lib/BaseModel"),
     NoteModel = require("app/models/NoteModel"),
     iter      = require("lib/iter"),
     forEach   = iter.forEach;

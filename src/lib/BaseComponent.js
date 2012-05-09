@@ -1,6 +1,6 @@
 /**
 
-  @module       app/ui/BaseComponent
+  @module       lib/BaseComponent
   @description  base ui component
 
 */

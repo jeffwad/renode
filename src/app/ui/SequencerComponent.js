@@ -7,8 +7,8 @@
 //"use strict";
 
 var iter           = require("lib/iter"),
+    BaseComponent  = require("lib/BaseComponent"),
     SequencerModel = require("app/models/SequencerModel"),
-    BaseComponent  = require("app/ui/BaseComponent"),
     TrackComponent = require("app/ui/TrackComponent"),
     template       = require("app/ui/templates/sequencer.html"),
     forEach        = iter.forEach;

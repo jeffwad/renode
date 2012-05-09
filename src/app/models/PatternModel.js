@@ -4,8 +4,8 @@
   @description  A track containing multiple notes, keyed by time
 
 */
-var BaseModel = require("app/models/BaseModel"),
-    StepModel = require("app/models/StepModel");
+var StepModel = require("app/models/StepModel");
+    BaseModel = require("lib/BaseModel"),
     iter      = require("lib/iter"),
     range     = iter.range,
     forEach   = iter.forEach;

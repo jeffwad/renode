@@ -4,7 +4,7 @@
   @description  A note containing midi data
 
 */
-var BaseModel    = require("app/models/BaseModel");
+var BaseModel    = require("lib/BaseModel");
 
 module.exports = BaseModel.create({
 

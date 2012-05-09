@@ -5,7 +5,7 @@
                 at any one time
 
 */
-var BaseModel    = require("app/models/BaseModel"),
+var BaseModel    = require("lib/BaseModel"),
     PatternModel = require("app/models/PatternModel"),
     forEach      = require("lib/iter").forEach;
 

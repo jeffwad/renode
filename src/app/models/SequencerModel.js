@@ -4,7 +4,7 @@
   @description  A sequencer that plays midi data
 
 */
-var BaseModel  = require("app/models/BaseModel"),
+var BaseModel  = require("lib/BaseModel"),
     TrackModel = require("app/models/TrackModel"),
     forEach    = require("lib/iter").forEach,
     Sequencer;
