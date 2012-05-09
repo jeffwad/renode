@@ -10,9 +10,8 @@ Object.defineProperties(Object.prototype, {
 
 
   /**
-    @public   creates a new copy of the "this"
-              objects passed in on the key "extend" are merged with the equivalent
-              object on "this" into a new object
+    @public   creates a new copy of the "this", applying the extending definition
+              calls any pre and post create methods  
     @param    {object} definition
     @return   object
   */
@@ -20,8 +19,23 @@ Object.defineProperties(Object.prototype, {
 
     value: function(definition) {
 
+      var object, 
+          postCreate = false;
+
+      //  if we have a pre create method, run it on the definition now
+      if(typeof this.__preCreate__ === "function") {
+        this.__preCreate__(definition);
+      }
+
+      //  if we have a post create method, cache it now to run post create
+      if(typeof this.__postCreate__ === "function") {
+        postCreate = this.__postCreate__;
+      }
+
+      //  get a new object
       var object = Object.create(typeof this === "function" ? this.prototype: this);
 
+      //  and apply all our new definitions
       forEach(definition, function(property, name) {
 
         Object.defineProperty(object, name, {
@@ -31,9 +45,18 @@ Object.defineProperties(Object.prototype, {
 
       });
 
+      //  if we cached a post create method - call it
+      if(postCreate) {
+        postCreate.call(object);
+      }
+
+      //   mr freeze...
+      Object.freeze(object);
+
       return object;
 
     },
+    
     enumerable: false
 
   },
@@ -55,6 +78,7 @@ Object.defineProperties(Object.prototype, {
   /**
     @public   creates a new copy of "this" with no extending definition
               if "this" is a function we call new on it
+              are 5 args enough
     @return   object
   */
   spawn: {

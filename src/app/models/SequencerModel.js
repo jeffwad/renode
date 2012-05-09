@@ -70,6 +70,8 @@ Sequencer = BaseModel.create({
 
     BaseModel.__init__.call(this, data);
 
+    console.log(this);
+
   },
 
 
@@ -175,6 +177,7 @@ Sequencer = BaseModel.create({
     this.midi.output.sendMessage([track.midiOff, note.key, note.VELOCITY_OFF]);
 
   }
+
 
 });
 

@@ -22,27 +22,33 @@ module.exports = Base.create({
   //  constructors
 
   /**
-    @description  prototype constructor
+    @description  Object.create pre filter
   */
-  create: function(definition) {
+  __preCreate__: function(definition) {
 
-    var baseModel;
+    Base.__preCreate__.call(this, definition);
 
     //  merge all the syncApi declarations
     definition.syncApi = utils.concat(definition.syncApi, this.syncApi);
 
-    baseModel = Base.create.call(this, definition);
+  },
 
-    baseModel.syncClientAndServer();
 
-    return baseModel;
+  /**
+    @description  Object.create post filter
+  */
+  __postCreate__: function() {
+
+    Base.__postCreate__.call(this);
+
+    this.syncClientAndServer();
 
   },
 
 
 
   /**
-    @description  instance constructor
+    @description  Object.spawn constructor
   */
   __init__: function(data) {
 

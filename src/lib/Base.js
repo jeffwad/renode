@@ -38,11 +38,9 @@ Base = EventMachine.create({
   //  constructors
 
   /**
-    @description  prototoype constructor
+    @description  Object.create pre filter
   */
-  create: function(definition) {
-
-    var base;
+  __preCreate__: function(definition) {
 
     //  merge all the definition object declarations
     forEach(["accessors", "hasMany", "hasOne"], function(property) {
@@ -54,19 +52,23 @@ Base = EventMachine.create({
     //  merge all the services declarations
     definition.services = utils.concat(definition.services, this.services);
 
-    //  create our base object
-    base = EventMachine.create.call(this, definition);
-
-    //  now we want to set up all the relationships factory methods on the prototype
-    base.createRelationships();
-
-    return base;
-
   },
 
 
   /**
-    @description  instance constructor
+    @description  Object.create post filter
+  */
+  __postCreate__: function() {
+
+    //  now we want to set up all the relationships factory methods on the prototype
+    this.createRelationships();
+
+  },
+
+
+
+  /**
+    @description  Object.spawn constructor
   */
   __init__: function(data) {
 
